@@ -31,6 +31,19 @@ return [
 
     'connections' => [
 
+        'mongodb' => [
+        'driver'   => 'mongodb',
+        'host'     => env('MONGO_HOST', 'localhost'),
+        'port'     => env('MONGO_PORT', 27017),
+        'database' => env('MONGO_DATABASE', 'swartwastebin'), // Fallback harus benar
+        'username' => env('MONGO_USERNAME'),
+        'password' => env('MONGO_PASSWORD'),
+        'options'  => [
+             // Opsi ini penting jika Anda menggunakan otentikasi
+             // 'database' => env('MONGO_AUTHENTICATION_DATABASE', 'admin'),
+        ],
+    ],
+
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DB_URL'),
