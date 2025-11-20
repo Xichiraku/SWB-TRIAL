@@ -10,7 +10,6 @@ class DashboardOperController extends Controller
 {
     public function dashboard()
     {
-        // Query MongoDB
         $total_homebase   = Homebase::count();
         $total_vacuum     = Vacuum::count();
         $total_peringatan = Peringatan::count();

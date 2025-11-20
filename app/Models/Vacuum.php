@@ -2,18 +2,16 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\Model;
 
 class Vacuum extends Model
 {
     protected $connection = 'mongodb';
-    protected $table = 'vacuums';
+    protected $collection = 'vacuums';
 
     protected $fillable = [
         'id_homebase',
         'level',
         'kondisi',
-        'created_at',
-        'updated_at',
     ];
 }

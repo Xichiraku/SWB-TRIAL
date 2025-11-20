@@ -2,18 +2,16 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\Model;
 
 class Peringatan extends Model
 {
     protected $connection = 'mongodb';
-    protected $table = 'peringatans';
+    protected $collection = 'peringatans';
 
     protected $fillable = [
         'tipe',
         'pesan',
         'waktu',
-        'created_at',
-        'updated_at',
     ];
 }
