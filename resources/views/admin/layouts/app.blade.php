@@ -17,10 +17,11 @@
         <!-- SIDEBAR -->
         <aside class="w-64 bg-white min-h-screen shadow-lg flex flex-col">
 
-            <div class="px-6 py-6 border-b">
-                <h2 class="text-2xl font-bold text-blue-700">Admin Panel</h2>
+            <div class="px-6 py-2 border-b flex items-center justify-center">
+                <img src="{{ asset('assets/images/logo.png') }}" 
+                    alt="Logo" 
+                    class="h-24 max-[180px] object-contain">
             </div>
-
             <nav class="flex-1 px-4 py-6 space-y-1">
 
                 <!-- Dashboard -->
