@@ -15,7 +15,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <a href="/" class="inline-flex items-center">
-                        <img src="{{ asset('assets/images/logo_swb.png') }}" 
+                        <img src="{{ asset('assets/images/logo.png') }}" 
                             alt="eSWB Logo" 
                             class="max-h-10 sm:max-h-12 w-auto">
                     </a>
@@ -60,34 +60,59 @@
             </div>
         </div>
 
-                <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm p-2 mb-4 sm:mb-6 lg:mb-8 overflow-x-auto">
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 min-w-max lg:min-w-0">
-                        <a href="{{ route('operator.dashboard') }}" class="flex items-center justify-center space-x-2 text-gray-600 hover:bg-gray-50 px-4 py-3 sm:px-6 sm:py-4 rounded-xl font-semibold transition whitespace-nowrap">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                            </svg>
-                            <span class="text-sm sm:text-base">Overview</span>
-                        </a>
-                        <a href="{{ route('operator.vacuumbin') }}" class="flex items-center justify-center space-x-2 bg-blue-100 text-blue-700 px-4 py-3 sm:px-6 sm:py-4 rounded-xl font-semibold transition whitespace-nowrap">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                            <span class="text-sm sm:text-base">Vacuum Bins</span>
-                        </a>
-                        <button class="flex items-center justify-center space-x-2 text-gray-600 px-4 py-3 sm:px-6 sm:py-4 rounded-xl font-semibold hover:bg-gray-50 transition whitespace-nowrap">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                            </svg>
-                            <span class="text-sm sm:text-base">Notifikasi</span>
-                        </button>
-                        <button class="flex items-center justify-center space-x-2 text-gray-600 px-4 py-3 sm:px-6 sm:py-4 rounded-xl font-semibold hover:bg-gray-50 transition whitespace-nowrap">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span class="text-sm sm:text-base">Task Update</span>
-                        </button>
-                    </div>
-                </div>
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm p-2 mb-4 sm:mb-6 lg:mb-8 overflow-x-auto">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 min-w-max lg:min-w-0">
+                
+                <a href="{{ route('operator.dashboard') }}" 
+                   class="flex items-center justify-center space-x-2 px-4 py-3 sm:px-6 sm:py-4 rounded-xl font-semibold transition whitespace-nowrap
+                   {{ request()->routeIs('operator.dashboard') 
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600' 
+                   }}">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span class="text-sm sm:text-base">Overview</span>
+                </a>
+
+                <a href="{{ route('operator.vacuumbin') }}" 
+                   class="flex items-center justify-center space-x-2 px-4 py-3 sm:px-6 sm:py-4 rounded-xl font-semibold transition whitespace-nowrap
+                   {{ request()->routeIs('operator.vacuumbin') 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600' 
+                   }}">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    <span class="text-sm sm:text-base">Vacuum Bins</span>
+                </a>
+
+                <a href="{{ route('operator.notifikasi') }}" 
+                   class="flex items-center justify-center space-x-2 px-4 py-3 sm:px-6 sm:py-4 rounded-xl font-semibold transition whitespace-nowrap
+                   {{ request()->routeIs('operator.notifikasi') 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600' 
+                   }}">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    <span class="text-sm sm:text-base">Notifikasi</span>
+                </a>
+
+                <a href="{{ route('operator.taskupdate') }}" 
+                    class="flex items-center justify-center space-x-2 px-4 py-3 sm:px-6 sm:py-4 rounded-xl font-semibold transition whitespace-nowrap
+                   {{ request()->routeIs('operator.taskupdate') 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600' 
+                   }}">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    <span class="text-sm sm:text-base">Task Update</span>
+                </a>
+
+            </div>
+        </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div class="bg-white rounded-xl p-4 sm:p-6 shadow-sm">

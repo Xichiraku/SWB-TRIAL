@@ -33,9 +33,21 @@ Route::put('/peringatan/{id}/resolve', [DashboardOperController::class, 'resolve
 
 Route::get('/bin/{id}', [BinController::class, 'show'])->name('bin.detail');
 
-// Settings Routes - NO AUTH REQUIRED
+// Settings Routes 
 Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings');
 Route::post('/admin/settings/update', [SettingController::class, 'update'])->name('admin.settings.update');
 
 Route::get('/admin/history', [HistoryController::class, 'index'])->name('admin.history');
 Route::get('/admin/history/refresh', [HistoryController::class, 'refresh'])->name('admin.history.refresh');
+
+// Notifikasi Routes
+Route::get('/operator/notifikasi', [DashboardOperController::class, 'notifikasi'])
+    ->name('operator.notifikasi');
+
+// Task Update Routes
+Route::get('/operator/taskupdate', [DashboardOperController::class, 'taskUpdate'])
+    ->name('operator.taskupdate');
+Route::post('/operator/taskupdate/{id}/start', [DashboardOperController::class, 'startTask'])
+    ->name('operator.taskupdate.start');
+Route::post('/operator/taskupdate/{id}/complete', [DashboardOperController::class, 'completeTask'])
+    ->name('operator.taskupdate.complete');

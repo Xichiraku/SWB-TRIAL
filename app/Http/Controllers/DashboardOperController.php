@@ -108,4 +108,93 @@ class DashboardOperController extends Controller
             ], 500);
         }
     }
+
+    public function notifikasi() 
+    {
+        $peringatans = Peringatan::with('homebase')
+                                ->orderBy('created_at', 'desc')
+                                ->get();
+        
+        $greeting = $this->getGreeting();
+        $currentDate = Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y');
+        
+        $totalPeringatans = $peringatans->count();
+        $activePeringatans = $peringatans->where('status', 'active')->count();
+        $highPriority = $peringatans->where('priority', 'high')->where('status', 'active')->count();
+        $resolvedToday = $peringatans->where('status', 'resolved')
+                                     ->whereBetween('updated_at', [
+                                         Carbon::today(),
+                                         Carbon::tomorrow()
+                                     ])->count();
+        
+        return view('operator.notifikasi', compact(
+            'peringatans',
+            'greeting',
+            'currentDate',
+            'totalPeringatans',
+            'activePeringatans',
+            'highPriority',
+            'resolvedToday'
+        ));
+    }
+
+    public function taskUpdate()
+{
+    // Ambil semua task dari peringatan yang statusnya active atau resolved
+    $tasks = Peringatan::with('homebase')
+                      ->whereIn('status', ['active', 'resolved'])
+                      ->orderBy('created_at', 'desc')
+                      ->get();
+    
+    $greeting = $this->getGreeting();
+    $currentDate = Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y');
+    
+    // Statistik
+    $pendingTasks = $tasks->where('status', 'active')->count();
+    $doneTasks = $tasks->where('status', 'resolved')->count();
+    
+    return view('operator.taskupdate', compact(
+        'tasks',
+        'greeting',
+        'currentDate',
+        'pendingTasks',
+        'doneTasks'
+    ));
+}
+
+public function startTask($id)
+{
+    try {
+        $task = Peringatan::findOrFail($id);
+        $task->update(['status' => 'in_progress']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Task dimulai'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+public function completeTask($id)
+{
+    try {
+        $task = Peringatan::findOrFail($id);
+        $task->update(['status' => 'resolved']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Task selesai'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage()
+        ], 500);
+    }
+}
 }
