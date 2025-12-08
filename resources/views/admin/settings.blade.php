@@ -26,7 +26,7 @@
         width: 100%;
         max-width: none; /* full layar */
         margin: 0;
-        padding: 2rem 3rem; /* bisa diubah sesuai kebutuhan */
+        padding: 0rem 2rem; /* bisa diubah sesuai kebutuhan */
     }
 
     h1 {
@@ -244,8 +244,7 @@
 </style>
 
 <div class="container">
-    <h1>SETTINGS</h1>
-
+     <h1 class="text-4xl font-bold text-gray-800 mb-2">Setting</h1>
     <!-- Notification Section -->
     <div class="card">
         <div class="card-header">
