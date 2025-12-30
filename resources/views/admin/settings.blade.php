@@ -1,10 +1,10 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Settings - Smart Waste Monitor')
+@section('title', __('app.settings') . ' - Smart Waste Monitor')
 
 @section('content')
 <div id="saveNotification" class="save-notification">
-    ✓ Settings saved successfully!
+    ✓ {{ __('app.settings_saved') }}
 </div>
 
 <style>
@@ -24,9 +24,9 @@
 
     .container {
         width: 100%;
-        max-width: none; /* full layar */
+        max-width: none;
         margin: 0;
-        padding: 0rem 2rem; /* bisa diubah sesuai kebutuhan */
+        padding: 0rem 2rem;
     }
 
     h1 {
@@ -42,7 +42,7 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         padding: 2rem;
         margin-bottom: 1.5rem;
-        width: 100%; /* full width */
+        width: 100%;
     }
 
     .card-header {
@@ -81,7 +81,6 @@
         color: #666;
     }
 
-    /* Toggle Switch */
     .toggle {
         position: relative;
         width: 56px;
@@ -115,7 +114,6 @@
         background: white;
     }
 
-    /* Slider */
     .slider-container {
         margin-bottom: 1.5rem;
     }
@@ -173,7 +171,6 @@
         margin-top: 0.5rem;
     }
 
-    /* Select Dropdown */
     .select-group {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -244,18 +241,19 @@
 </style>
 
 <div class="container">
-     <h1 class="text-4xl font-bold text-gray-800 mb-2">Setting</h1>
+    <h1 class="text-4xl font-bold text-gray-800 mb-2">{{ __('app.settings') }}</h1>
+    
     <!-- Notification Section -->
     <div class="card">
         <div class="card-header">
             <span style="font-size: 1.5rem;">🔔</span>
-            <h2>Notifikasi</h2>
+            <h2>{{ __('app.notifications') }}</h2>
         </div>
 
         <div class="setting-item">
             <div class="setting-info">
-                <h4>Izinkan Notifikasi</h4>
-                <p>Saklar utama untuk semua jenis notifikasi</p>
+                <h4>{{ __('app.allow_notifications') }}</h4>
+                <p>{{ __('app.master_switch_notif') }}</p>
             </div>
             <div class="toggle {{ $settings->notif_enabled ? 'active' : '' }}" 
                  onclick="toggleSwitch(this, 'notif_enabled')">
@@ -265,12 +263,12 @@
 
         <hr class="section-divider">
 
-        <h3 style="margin-bottom: 1rem; color: #333;">Jenis Peringatan</h3>
+        <h3 style="margin-bottom: 1rem; color: #333;">{{ __('app.alert_types') }}</h3>
 
         <div class="setting-item">
             <div class="setting-info">
-                <h4>Peringatan Kapasitas Penuh</h4>
-                <p>Beritahu ketika tempat sampah mencapai batas kapasitas</p>
+                <h4>{{ __('app.capacity_full_alert') }}</h4>
+                <p>{{ __('app.notify_when_full') }}</p>
             </div>
             <div class="toggle {{ $settings->capacity_alert ? 'active' : '' }}" 
                  onclick="toggleSwitch(this, 'capacity_alert')">
@@ -280,8 +278,8 @@
 
         <div class="setting-item">
             <div class="setting-info">
-                <h4>Peringatan Baterai Lemah</h4>
-                <p>Beritahu ketika baterai surya hampir habis</p>
+                <h4>{{ __('app.battery_low_alert') }}</h4>
+                <p>{{ __('app.notify_low_battery') }}</p>
             </div>
             <div class="toggle {{ $settings->battery_alert ? 'active' : '' }}" 
                  onclick="toggleSwitch(this, 'battery_alert')">
@@ -291,8 +289,8 @@
 
         <div class="setting-item">
             <div class="setting-info">
-                <h4>Peringatan Perawatan</h4>
-                <p>Beritahu ketika perawatan diperlukan</p>
+                <h4>{{ __('app.maintenance_alert') }}</h4>
+                <p>{{ __('app.notify_maintenance') }}</p>
             </div>
             <div class="toggle {{ $settings->nurse_alert ? 'active' : '' }}" 
                  onclick="toggleSwitch(this, 'nurse_alert')">
@@ -302,12 +300,12 @@
 
         <hr class="section-divider">
 
-        <h3 style="margin-bottom: 1rem; color: #333;">Metode Pengiriman</h3>
+        <h3 style="margin-bottom: 1rem; color: #333;">{{ __('app.delivery_methods') }}</h3>
 
         <div class="setting-item">
             <div class="setting-info">
-                <h4>Notifikasi Email</h4>
-                <p>Kirim peringatan melalui email</p>
+                <h4>{{ __('app.email_notification') }}</h4>
+                <p>{{ __('app.send_via_email') }}</p>
             </div>
             <div class="toggle {{ $settings->email_notif ? 'active' : '' }}" 
                  onclick="toggleSwitch(this, 'email_notif')">
@@ -317,8 +315,8 @@
 
         <div class="setting-item">
             <div class="setting-info">
-                <h4>Notifikasi Push</h4>
-                <p>Notifikasi melalui browser</p>
+                <h4>{{ __('app.push_notification') }}</h4>
+                <p>{{ __('app.send_via_browser') }}</p>
             </div>
             <div class="toggle {{ $settings->push_notif ? 'active' : '' }}" 
                  onclick="toggleSwitch(this, 'push_notif')">
@@ -331,53 +329,53 @@
     <div class="card">
         <div class="card-header">
             <span style="font-size: 1.5rem;">⚙️</span>
-            <h2>System Configuration</h2>
+            <h2>{{ __('app.system_configuration') }}</h2>
         </div>
 
-        <h3 style="margin-bottom: 1rem; color: #333;">Operation Mode</h3>
+        <h3 style="margin-bottom: 1rem; color: #333;">{{ __('app.operation_mode') }}</h3>
         <div class="operation-mode">
-            <p>Automatic</p>
-            <p>System automatically triggers alerts and maintenance</p>
+            <p>{{ __('app.automatic') }}</p>
+            <p>{{ __('app.system_auto_trigger') }}</p>
         </div>
 
         <hr class="section-divider">
 
-        <h3 style="margin-bottom: 1rem; color: #333;">Alert Threshold</h3>
+        <h3 style="margin-bottom: 1rem; color: #333;">{{ __('app.alert_threshold') }}</h3>
 
         <div class="slider-container">
             <div class="slider-header">
-                <span class="slider-label">Collection Threshold</span>
+                <span class="slider-label">{{ __('app.collection_threshold') }}</span>
                 <span class="slider-value" id="collectionValue">{{ $settings->collection_threshold }}%</span>
             </div>
             <input type="range" class="slider" id="collectionThreshold" 
                    min="0" max="100" value="{{ $settings->collection_threshold }}"
                    oninput="updateSlider('collectionThreshold', 'collectionValue', '%')"
                    onchange="saveSettings()">
-            <p class="slider-description">Trigger collection alerts when capacity reaches this level</p>
+            <p class="slider-description">{{ __('app.trigger_collection') }}</p>
         </div>
 
         <div class="slider-container">
             <div class="slider-header">
-                <span class="slider-label">Battery Low Threshold</span>
+                <span class="slider-label">{{ __('app.battery_threshold') }}</span>
                 <span class="slider-value" id="batteryValue">{{ $settings->battery_threshold }}%</span>
             </div>
             <input type="range" class="slider" id="batteryThreshold" 
                    min="0" max="100" value="{{ $settings->battery_threshold }}"
                    oninput="updateSlider('batteryThreshold', 'batteryValue', '%')"
                    onchange="saveSettings()">
-            <p class="slider-description">Trigger battery alerts when level below this threshold</p>
+            <p class="slider-description">{{ __('app.trigger_battery') }}</p>
         </div>
 
         <div class="slider-container">
             <div class="slider-header">
-                <span class="slider-label">Data Refresh Interval</span>
+                <span class="slider-label">{{ __('app.refresh_interval') }}</span>
                 <span class="slider-value" id="refreshValue">{{ $settings->refresh_interval }}s</span>
             </div>
             <input type="range" class="slider" id="refreshInterval" 
                    min="10" max="120" step="10" value="{{ $settings->refresh_interval }}"
                    oninput="updateSlider('refreshInterval', 'refreshValue', 's')"
                    onchange="saveSettings()">
-            <p class="slider-description">How often to refresh data from IoT sensor</p>
+            <p class="slider-description">{{ __('app.how_often_refresh') }}</p>
         </div>
     </div>
 
@@ -385,12 +383,12 @@
     <div class="card">
         <div class="card-header">
             <span style="font-size: 1.5rem;">🎨</span>
-            <h2>Display Preferences</h2>
+            <h2>{{ __('app.display_preferences') }}</h2>
         </div>
 
         <div class="select-group">
             <div class="select-container">
-                <label>Theme</label>
+                <label>{{ __('app.theme') }}</label>
                 <select id="theme" onchange="saveSettings()">
                     <option {{ $settings->theme == 'System' ? 'selected' : '' }}>System</option>
                     <option {{ $settings->theme == 'Light' ? 'selected' : '' }}>Light</option>
@@ -399,7 +397,7 @@
             </div>
 
             <div class="select-container">
-                <label>Language</label>
+                <label>{{ __('app.language') }}</label>
                 <select id="language" onchange="saveSettings()">
                     <option {{ $settings->language == 'English' ? 'selected' : '' }}>English</option>
                     <option {{ $settings->language == 'Bahasa Indonesia' ? 'selected' : '' }}>Bahasa Indonesia</option>
@@ -408,7 +406,7 @@
             </div>
 
             <div class="select-container">
-                <label>Units</label>
+                <label>{{ __('app.units') }}</label>
                 <select id="units" onchange="saveSettings()">
                     <option {{ $settings->units == 'Metric' ? 'selected' : '' }}>Metric</option>
                     <option {{ $settings->units == 'Imperial' ? 'selected' : '' }}>Imperial</option>
@@ -419,7 +417,7 @@
 </div>
 
 <script>
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
 
     const settingsData = {
         notif_enabled: {{ $settings->notif_enabled ? 'true' : 'false' }},
@@ -465,6 +463,10 @@
         .then(result => {
             if (result.success) {
                 showNotification();
+                // Reload halaman setelah 1 detik untuk apply bahasa baru
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             }
         })
         .catch(error => console.error('Error:', error));

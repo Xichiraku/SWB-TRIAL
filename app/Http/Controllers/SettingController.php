@@ -2,65 +2,73 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class SettingController extends Controller
 {
     public function index()
     {
-        // Get settings (ID 1 sebagai default)
-        $settings = DB::table('settings')->where('id', 1)->first();
-        
-        // If no settings exist, create default
+        // Cek session
+        if (!session('user')) {
+            return redirect('/');
+        }
+
+        // Get settings dari database (ambil yang pertama, atau buat default kalau belum ada)
+        $settings = Setting::first();
+
+        // Kalau belum ada settings, buat default
         if (!$settings) {
-            DB::table('settings')->insert([
-                'id' => 1,
-                'notif_enabled' => false,
+            $settings = Setting::create([
+                'notif_enabled' => true,
                 'capacity_alert' => true,
                 'battery_alert' => true,
                 'nurse_alert' => true,
                 'email_notif' => true,
-                'push_notif' => true,
+                'push_notif' => false,
                 'collection_threshold' => 85,
-                'battery_threshold' => 25,
+                'battery_threshold' => 20,
                 'refresh_interval' => 30,
                 'theme' => 'System',
                 'language' => 'English',
-                'units' => 'Metric',
-                'created_at' => now(),
-                'updated_at' => now()
+                'units' => 'Metric'
             ]);
-            
-            $settings = DB::table('settings')->where('id', 1)->first();
         }
-        
+
         return view('admin.settings', compact('settings'));
     }
-    
+
     public function update(Request $request)
     {
-        $data = [
-            'notif_enabled' => $request->input('notif_enabled', false),
-            'capacity_alert' => $request->input('capacity_alert', false),
-            'battery_alert' => $request->input('battery_alert', false),
-            'nurse_alert' => $request->input('nurse_alert', false),
-            'email_notif' => $request->input('email_notif', false),
-            'push_notif' => $request->input('push_notif', false),
-            'collection_threshold' => $request->input('collection_threshold', 85),
-            'battery_threshold' => $request->input('battery_threshold', 25),
-            'refresh_interval' => $request->input('refresh_interval', 30),
-            'theme' => $request->input('theme', 'System'),
-            'language' => $request->input('language', 'English'),
-            'units' => $request->input('units', 'Metric'),
-            'updated_at' => now()
-        ];
-        
-        DB::table('settings')->where('id', 1)->update($data);
-        
+        // Validasi data
+        $validated = $request->validate([
+            'notif_enabled' => 'boolean',
+            'capacity_alert' => 'boolean',
+            'battery_alert' => 'boolean',
+            'nurse_alert' => 'boolean',
+            'email_notif' => 'boolean',
+            'push_notif' => 'boolean',
+            'collection_threshold' => 'integer|min:0|max:100',
+            'battery_threshold' => 'integer|min:0|max:100',
+            'refresh_interval' => 'integer|min:10|max:120',
+            'theme' => 'string',
+            'language' => 'string',
+            'units' => 'string'
+        ]);
+
+        // Get settings pertama atau buat baru
+        $settings = Setting::first();
+
+        if ($settings) {
+            $settings->update($validated);
+        } else {
+            $settings = Setting::create($validated);
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'Settings updated successfully'
+            'message' => 'Settings updated successfully',
+            'data' => $settings
         ]);
     }
 }

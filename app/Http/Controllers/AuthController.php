@@ -1,35 +1,72 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     public function showLogin()
     {
+        // Kalau sudah login, redirect ke dashboard sesuai role
+        if (session('user')) {
+            $role = session('user')['role'];
+            return redirect()->route($role === 'admin' ? 'admin.dashboard' : 'operator.dashboard');
+        }
+
         return view('auth.login');
     }
 
     public function login(Request $request)
     {
-        $role = $request->role;
+        // Validasi input
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+            'role' => 'required|in:admin,operator'
+        ]);
 
+        // Cari user berdasarkan username SAJA dulu
+        $user = User::where('username', $request->username)->first();
+
+        // Cek apakah user ada
+        if (!$user) {
+            return back()->withErrors([
+                'login' => 'Username tidak ditemukan.'
+            ])->withInput();
+        }
+
+        // Cek apakah role yang dipilih sesuai dengan role user di database
+        if ($user->role !== $request->role) {
+            return back()->withErrors([
+                'login' => 'Role yang dipilih tidak sesuai dengan akun Anda.'
+            ])->withInput();
+        }
+
+        // Cek password
+        if (!Hash::check($request->password, $user->password)) {
+            return back()->withErrors([
+                'login' => 'Password salah.'
+            ])->withInput();
+        }
+
+        // Login berhasil - simpan ke session
         session([
             'user' => [
-                'name' => $request->username,
-                'username' => $request->username,
-                'role' => $role
+                'id' => $user->_id, // MongoDB pakai _id bukan id
+                'username' => $user->username,
+                'role' => $user->role
             ]
         ]);
 
-        // diarahkan sesuai role
-        if ($role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($role === 'operator') {
-            return redirect()->route('operator.dashboard');
+        // Redirect sesuai role DARI DATABASE (bukan dari form)
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
+        } else {
+            return redirect()->route('operator.dashboard')->with('success', 'Login berhasil!');
         }
-
-        return redirect()->route('login');
     }
 
     public function logout(Request $request)
@@ -38,6 +75,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', 'Logout berhasil!');
     }
 }
