@@ -1,63 +1,87 @@
 <?php
-// app/Models/Bin.php
 
 namespace App\Models;
 
 use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Bin extends Model
 {
+    use HasFactory;
+
     protected $connection = 'mongodb';
+    
+    // Pastikan ini 'bins' (sesuai yang kamu konfirmasi)
     protected $collection = 'bins';
 
+    // Field disesuaikan dengan screenshot database MongoDB kamu
     protected $fillable = [
-        'bin_id',
-        'name',
-        'location',
-        'status',
+        'code',             // PENTING: Di DB namanya 'code', bukan 'bin_id'
+        'homebase_id',
+        'status',           // Di DB isinya "active", "maintenance", dll
         'capacity',
-        'battery',
-        'latitude',
-        'longitude',
-        'last_updated',
-        'is_active'
+        'battery_level',    // PENTING: Di DB namanya 'battery_level', bukan 'battery'
+        'last_maintenance',
+        'created_at',
+        'updated_at'
     ];
 
     protected $casts = [
         'capacity' => 'integer',
-        'battery' => 'integer',
-        'is_active' => 'boolean',
-        'last_updated' => 'datetime'
+        'battery_level' => 'integer', // Casting kolom yang benar
+        'last_maintenance' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
-    // Scope untuk filter status
-    public function scopeByStatus($query, $status)
-    {
-        return $query->where('status', $status);
-    }
+    // --- SCOPES (Filter Query) ---
 
-    // Scope untuk bin aktif
+    // Scope Active: Mengecek apakah status di string adalah "active"
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('status', 'active');
     }
 
-    // Get status color
+    // Scope By Status: Mengubah filter dashboard (Full/Normal) menjadi query kapasitas
+    public function scopeByStatus($query, $filter)
+    {
+        if ($filter === 'Full') {
+            return $query->where('capacity', '>=', 85);
+        }
+        
+        if ($filter === 'Normal') {
+            return $query->where('capacity', '<', 85);
+        }
+        
+        if ($filter === 'Maintenance') {
+            return $query->where('status', 'maintenance');
+        }
+
+        return $query;
+    }
+
+    // --- ACCESSORS & HELPERS ---
+
+    // Menentukan warna badge status
     public function getStatusColorAttribute()
     {
-        return match($this->status) {
-            'Full' => 'red',
-            'Normal' => 'green',
-            'Maintenance' => 'orange',
-            default => 'gray'
-        };
+        if ($this->status === 'maintenance') {
+            return 'orange';
+        }
+        
+        if ($this->capacity >= 85) {
+            return 'red';
+        }
+        
+        return 'green';
     }
 
-    // Check if bin needs attention
+    // Logic untuk menentukan apakah bin butuh perhatian
     public function needsAttention()
     {
-        return $this->status === 'Full' || 
-               $this->capacity >= 85 || 
-               $this->battery <= 30;
+        // Perhatian jika penuh, baterai lemah, atau maintenance
+        return $this->capacity >= 85 || 
+               $this->battery_level <= 30 || 
+               $this->status === 'maintenance';
     }
 }

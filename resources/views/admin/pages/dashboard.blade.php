@@ -9,7 +9,7 @@
        {{ __('app.dashboard_monitoring') }}
     </h1>
     <p class="text-gray-600 mt-1 text-base leading-snug" id="last-updated">
-       {{ __('app.last_updated') }}: Loading...
+        {{ __('app.last_updated') }}: Loading...
     </p>
 </div>
 @endsection
@@ -59,10 +59,8 @@ x-init="
 "
 class="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
 
-<!-- STATS CARDS -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
 
-    <!-- Total Bins -->
     <div @click="filter = 'all'; fetchBins()" 
          :class="filter === 'all' ? 'bg-blue-50 border-blue-400' : 'bg-white border-gray-300'"
          class="rounded-xl shadow-sm p-6 border-2 hover:bg-blue-50 hover:border-blue-300 transition cursor-pointer">
@@ -80,7 +78,6 @@ class="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
         </div>
     </div>
 
-    <!-- Full -->
     <div @click="filter = 'Full'; fetchBins()" 
          :class="filter === 'Full' ? 'bg-red-50 border-red-400' : 'bg-white border-gray-300'"
          class="rounded-xl shadow-sm p-6 border-2 hover:bg-red-50 hover:border-red-300 transition cursor-pointer">
@@ -102,7 +99,6 @@ class="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
         </div>
     </div>
 
-    <!-- Normal -->
     <div @click="filter = 'Normal'; fetchBins()" 
          :class="filter === 'Normal' ? 'bg-green-50 border-green-400' : 'bg-white border-gray-300'"
          class="rounded-xl shadow-sm p-6 border-2 hover:bg-green-50 hover:border-green-300 transition cursor-pointer">
@@ -124,7 +120,6 @@ class="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
         </div>
     </div>
 
-    <!-- Maintenance -->
     <div @click="filter = 'Maintenance'; fetchBins()" 
          :class="filter === 'Maintenance' ? 'bg-orange-50 border-orange-400' : 'bg-white border-gray-300'"
          class="rounded-xl shadow-sm p-6 border-2 hover:bg-orange-50 hover:border-orange-300 transition cursor-pointer">
@@ -150,30 +145,29 @@ class="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
 
 </div>
 
-<!-- LOADING -->
 <div x-show="loading" class="bg-white rounded-xl shadow-sm border p-12 text-center">
     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
     <p class="text-gray-600">{{ __('app.loading_bins') }}</p>
 </div>
 
-<!-- BIN LIST -->
 <div x-show="!loading" class="bg-white rounded-xl shadow-sm border p-6">
     <h2 class="text-xl font-bold text-gray-900 mb-6">{{ __('app.smart_vacuum_bins') }}</h2>
 
     <div class="space-y-4">
         <template x-for="(bin, index) in bins" :key="index">
-            <a :href="`/bin/${bin.bin_id}`" class="block">
-                <div class="bg-white border-2 border-gray-300 rounded-xl p-5 hover:bg-blue-50 hover:border-blue-300 transition cursor-pointer">
+            <a :href="`/admin/bin/${bin.bin_id}`" class="block group">
+                <div class="bg-white border-2 border-gray-300 rounded-xl p-5 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md">
                     <div class="flex items-center justify-between">
+                        
                         <div class="flex items-center space-x-4">
-                            <div class="bg-gray-100 p-3 rounded-lg">
-                                <svg class="w-8 h-8 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-gray-100 p-3 rounded-lg group-hover:bg-blue-100 transition-colors">
+                                <svg class="w-8 h-8 text-gray-700 group-hover:text-blue-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-bold" x-text="bin.name"></h3>
+                                <h3 class="text-lg font-bold group-hover:text-blue-700 transition-colors" x-text="bin.name"></h3>
                                 <div class="flex items-center space-x-1 text-gray-600 text-sm mt-1">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -185,7 +179,6 @@ class="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
                                 </div>
                             </div>
 
-                            <!-- Status Badge -->
                             <div x-show="bin.status === 'Full'" class="bg-red-100 text-red-700 px-4 py-1 rounded-full text-sm font-medium">{{ __('app.full') }}</div>
                             <div x-show="bin.status === 'Normal'" class="bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium">{{ __('app.normal') }}</div>
                             <div x-show="bin.status === 'Maintenance'" class="bg-orange-100 text-orange-700 px-4 py-1 rounded-full text-sm font-medium">{{ __('app.maintenance') }}</div>
@@ -195,15 +188,17 @@ class="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">{{ __('app.capacity') }}</p>
                                 <div class="flex items-center space-x-3">
-                                    <div class="w-48 bg-gray-300 h-3 rounded-full">
-                                        <div class="bg-blue-600 h-3 rounded-full" :style="`width: ${bin.capacity}%`"></div>
+                                    <div class="w-48 bg-gray-300 h-3 rounded-full overflow-hidden">
+                                        <div class="h-3 rounded-full transition-all duration-1000" 
+                                             :class="bin.capacity >= 85 ? 'bg-red-600' : 'bg-blue-600'"
+                                             :style="`width: ${bin.capacity}%`"></div>
                                     </div>
                                     <span class="text-sm font-bold text-gray-700" x-text="bin.capacity + '%'"></span>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
-                                <span class="text-lg font-bold text-blue-600" x-text="bin.battery + '%'"></span>
+                                <div class="w-3 h-3 rounded-full" :class="bin.battery <= 20 ? 'bg-red-500' : 'bg-blue-500'"></div>
+                                <span class="text-lg font-bold" :class="bin.battery <= 20 ? 'text-red-600' : 'text-blue-600'" x-text="bin.battery + '%'"></span>
                             </div>
                         </div>
                     </div>
@@ -211,7 +206,6 @@ class="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
             </a>
         </template>
 
-        <!-- Empty State -->
         <div x-show="bins.length === 0 && !loading" class="text-center py-12">
             <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
