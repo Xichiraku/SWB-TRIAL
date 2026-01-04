@@ -25,13 +25,19 @@ class Homebase extends Model
         'temperature' => 'float',
     ];
 
+    /**
+     * Get vacuums yang assigned ke homebase ini
+     */
     public function vacuums()
     {
         return $this->hasMany(Vacuum::class, 'homebase_id', '_id');
     }
 
-    public function peringatans()
+    /**
+     * Get active vacuums count
+     */
+    public function getActiveAttribute()
     {
-        return $this->hasMany(Peringatan::class, 'homebase_id', '_id');
+        return $this->vacuums()->where('is_active', true)->count();
     }
-} 
+}

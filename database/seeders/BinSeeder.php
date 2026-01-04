@@ -29,17 +29,26 @@ class BinSeeder extends Seeder
 
         foreach ($locations as $index => $location) {
             $binNumber = str_pad($index + 1, 3, '0', STR_PAD_LEFT);
-            $status = $statuses[array_rand($statuses)];
             
-            // Set capacity based on status
-            $capacity = match($status) {
-                'Full' => rand(85, 100),
-                'Normal' => rand(30, 75),
-                'Maintenance' => rand(0, 50),
-            };
-
-            // Set battery level
-            $battery = rand(40, 100);
+            // 🔥 BIN 001 = SENSOR REAL, sisanya random
+            if ($binNumber === '001') {
+                // BIN 001 - Connected to IoT Sensor (ESP32)
+                $status = 'Normal'; // Default awal Normal
+                $capacity = 45; // Capacity awal
+                $battery = 85; // Battery bagus
+                $this->command->info('🔌 BIN 001 - IoT Sensor Connected (ESP32)');
+            } else {
+                // BIN 002-010 - Random Dummy Data
+                $status = $statuses[array_rand($statuses)];
+                
+                $capacity = match($status) {
+                    'Full' => rand(85, 100),
+                    'Normal' => rand(30, 75),
+                    'Maintenance' => rand(0, 50),
+                };
+                
+                $battery = rand(40, 100);
+            }
 
             Bin::create([
                 'bin_id' => $binNumber,
@@ -51,10 +60,13 @@ class BinSeeder extends Seeder
                 'capacity' => $capacity,
                 'battery' => $battery,
                 'last_updated' => now()->subMinutes(rand(1, 60)),
-                'is_active' => true
+                'is_active' => $status !== 'Maintenance', // Maintenance = inactive
+                'homebase_id' => null // Bisa diisi nanti kalau ada homebase
             ]);
         }
 
-        $this->command->info('✅ 10 dummy bins created successfully!');
+        $this->command->info('✅ 10 bins created successfully!');
+        $this->command->info('📍 BIN 001: IoT Sensor (Real-time)');
+        $this->command->info('📍 BIN 002-010: Manual/Dummy Data');
     }
 }

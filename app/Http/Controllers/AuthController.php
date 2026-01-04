@@ -55,18 +55,17 @@ class AuthController extends Controller
         // Login berhasil - simpan ke session
         session([
             'user' => [
-                'id' => $user->_id, // MongoDB pakai _id bukan id
+                'id' => $user->_id,
                 'username' => $user->username,
                 'role' => $user->role
             ]
         ]);
 
-        // Redirect sesuai role DARI DATABASE (bukan dari form)
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
-        } else {
-            return redirect()->route('operator.dashboard')->with('success', 'Login berhasil!');
-        }
+        // Redirect ke halaman yang sama dengan pesan sukses dan auto redirect
+        return back()->with([
+            'login_success' => true,
+            'redirect_to' => $user->role === 'admin' ? route('admin.dashboard') : route('operator.dashboard')
+        ]);
     }
 
     public function logout(Request $request)
@@ -75,6 +74,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Logout berhasil!');
+        return redirect()->route('login')->with('logout_success', true);
     }
 }

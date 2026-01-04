@@ -2,199 +2,208 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Homebase;
 use App\Models\Vacuum;
-use App\Models\Peringatan;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
+use App\Models\Notification;
+use App\Models\Bin;
 
 class DashboardOperController extends Controller
 {
+    /**
+     * Dashboard Operator - Halaman Utama
+     */
     public function index()
     {
-        $homebases = Homebase::with('vacuums')->get();
-        $peringatans = Peringatan::active()
-                      ->orderBy('priority', 'desc')
-                      ->orderBy('created_at', 'desc')
-                      ->get();
-        
-        $taskCount = $peringatans->count();
-        $greeting = $this->getGreeting();
-        $currentDate = Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y');
-        
-        return view('operator.dashboard', compact(
-            'homebases', 
-            'peringatans', 
-            'taskCount', 
-            'greeting', 
-            'currentDate'
-        ));
-    }
+        // Ambil semua homebase dengan relasi vacuums
+        $homebases = Homebase::with('vacuums')->get()->map(function($homebase) {
+            return [
+                'name' => $homebase->name,
+                'location' => $homebase->location,
+                'status' => $homebase->status,
+                'vacuum_assigned' => $homebase->vacuum_assigned,
+                'active' => $homebase->vacuums()->where('is_active', true)->count(),
+            ];
+        });
 
-    private function getGreeting()
-    {
-        $hour = Carbon::now()->format('H');
+        // 👇 GENERATE WARNINGS UNTUK OPERATOR (FULL + MAINTENANCE)
+        $warnings = [];
         
-        if ($hour >= 5 && $hour < 11) {
-            return 'Pagi';
-        } elseif ($hour >= 11 && $hour < 15) {
-            return 'Siang';
-        } elseif ($hour >= 15 && $hour < 18) {
-            return 'Sore';
-        } else {
-            return 'Malam';
+        // 1. Warning untuk bin yang PENUH (status = Full ATAU capacity >= 85%)
+        $fullBins = Bin::where(function($query) {
+            $query->where('status', 'Full')
+                  ->orWhere('capacity', '>=', 85);
+        })->where('status', '!=', 'Maintenance') // Exclude maintenance dari full
+          ->get();
+        
+        foreach ($fullBins as $bin) {
+            $warnings[] = [
+                'type' => 'critical',
+                'title' => ($bin->name ?? "Bin #{$bin->bin_id}") . ' Penuh',
+                'message' => 'Segera kosongkan ' . ($bin->name ?? "Bin #{$bin->bin_id}") . ' di ' . $bin->location . '. Kapasitas sudah mencapai ' . $bin->capacity . '%.'
+            ];
         }
-    }
 
-    public function resolvePeringatan($id)
-    {
-        try {
-            $peringatan = Peringatan::findOrFail($id);
-            $peringatan->update(['status' => 'resolved']);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Peringatan berhasil diselesaikan'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
-            ], 500);
+        // 2. Warning untuk bin yang sedang MAINTENANCE
+        $maintenanceBins = Bin::where('status', 'Maintenance')->get();
+        
+        foreach ($maintenanceBins as $bin) {
+            $warnings[] = [
+                'type' => 'info',
+                'title' => 'Maintenance - ' . ($bin->name ?? "Bin #{$bin->bin_id}"),
+                'message' => ($bin->name ?? "Bin #{$bin->bin_id}") . ' di ' . $bin->location . ' sedang dalam maintenance. Harap periksa status.'
+            ];
         }
+
+        // Hitung pending tasks dari warnings yang ada
+        $pendingTasks = count($warnings);
+
+        return view('operator.dashboard', compact('homebases', 'warnings', 'pendingTasks'));
     }
 
+    /**
+     * Halaman Vacuum Bin - List semua vacuum
+     */
     public function vacuumbin()
     {
-        $vacuums = Vacuum::with('homebase')->get();
-        $greeting = $this->getGreeting();
-        $currentDate = Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y');
-        
-        $totalVacuums = $vacuums->count();
-        $activeVacuums = $vacuums->where('status', 'active')->count();
-        $fullCapacity = $vacuums->where('capacity', '>=', 90)->count();
-        $lowBattery = $vacuums->where('battery_level', '<=', 30)->count();
-        
-        return view('operator.vacuumbin', compact(
-            'vacuums',
-            'greeting',
-            'currentDate',
-            'totalVacuums',
-            'activeVacuums',
-            'fullCapacity',
-            'lowBattery'
-        ));
+        // Ambil semua vacuum dengan homebase
+        $vacuums = Vacuum::with('homebase')->get()->map(function($vacuum) {
+            return (object)[
+                'code' => $vacuum->code,
+                'name' => $vacuum->name,
+                'location' => $vacuum->location,
+                'capacity' => $vacuum->capacity,
+                'battery' => $vacuum->battery,
+                'status' => $vacuum->status_label,
+                'updated_at' => $vacuum->updated_at
+            ];
+        });
+
+        return view('operator.vacuumbin', compact('vacuums'));
     }
 
-    public function emptyVacuum($id)
+    /**
+     * Halaman Notifikasi (Cuma dari Bins Real-time)
+     */
+    public function notifikasi()
     {
-        try {
-            $vacuum = Vacuum::findOrFail($id);
-            $vacuum->update(['capacity' => 0]);
+        $notifikasis = [];
+        
+        // 1. Notifikasi dari Bins yang PENUH (Real-time)
+        $fullBins = Bin::where(function($query) {
+            $query->where('status', 'Full')
+                  ->orWhere('capacity', '>=', 85);
+        })->where('status', '!=', 'Maintenance')
+          ->get();
+        
+        foreach ($fullBins as $bin) {
+            $notifikasis[] = (object)[
+                'title' => ($bin->name ?? "Bin #{$bin->bin_id}") . ' Penuh',
+                'is_new' => true,
+                'source' => 'System',
+                'datetime' => now()->format('Y-m-d H:i'),
+                'message' => 'Segera kosongkan bin di ' . $bin->location . '. Kapasitas sudah mencapai ' . $bin->capacity . '%.',
+                'type' => 'critical',
+                'has_check' => true
+            ];
+        }
+        
+        // 2. Notifikasi dari Bins yang MAINTENANCE (Real-time)
+        $maintenanceBins = Bin::where('status', 'Maintenance')->get();
+        
+        foreach ($maintenanceBins as $bin) {
+            $notifikasis[] = (object)[
+                'title' => 'Maintenance - ' . ($bin->name ?? "Bin #{$bin->bin_id}"),
+                'is_new' => true,
+                'source' => 'Admin',
+                'datetime' => now()->format('Y-m-d H:i'),
+                'message' => 'Bin di ' . $bin->location . ' sedang dalam maintenance. Harap periksa status.',
+                'type' => 'info',
+                'has_check' => true
+            ];
+        }
+        
+        // Convert ke collection (TANPA gabung notifikasi manual)
+        $notifikasis = collect($notifikasis);
 
-            Peringatan::where('vacuum_code', $vacuum->code)
-                      ->where('type', 'capacity')
-                      ->where('status', 'active')
-                      ->update(['status' => 'resolved']);
+        return view('operator.notifikasi', compact('notifikasis'));
+    }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Vacuum berhasil dikosongkan'
-            ]);
-        } catch (\Exception $e) {
+    /**
+     * Halaman Task Update
+     */
+    public function taskUpdate()
+    {
+        // Ambil notifikasi yang jadi task (has_check = true)
+        $tasks = Notification::where('has_check', true)
+            ->with('homebase')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function($notif) {
+                return (object)[
+                    '_id' => $notif->_id,
+                    'status' => $notif->is_new ? 'active' : 'resolved',
+                    'type' => $notif->type,
+                    'message' => $notif->message,
+                    'created_at' => $notif->created_at,
+                    'homebase' => (object)[
+                        'nama_lokasi' => $notif->homebase->name ?? 'Unknown',
+                        'kode_bin' => $notif->vacuum_code ?? '-'
+                    ]
+                ];
+            });
+
+        return view('operator.taskupdate', compact('tasks'));
+    }
+
+    /**
+     * Start Task - Operator mulai mengerjakan task
+     */
+    public function startTask($id)
+    {
+        $notification = Notification::find($id);
+        
+        if (!$notification) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
-            ], 500);
+                'message' => 'Task tidak ditemukan'
+            ], 404);
         }
+
+        // Update status jadi in progress
+        $notification->is_new = true;
+        $notification->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Baik, selamat mengerjakan 😊',
+            'status' => 'in_progress'
+        ]);
     }
 
-    public function notifikasi() 
+    /**
+     * Complete Task - Operator selesai mengerjakan task
+     */
+    public function completeTask($id)
     {
-        $peringatans = Peringatan::with('homebase')
-                                ->orderBy('created_at', 'desc')
-                                ->get();
+        $notification = Notification::find($id);
         
-        $greeting = $this->getGreeting();
-        $currentDate = Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y');
-        
-        $totalPeringatans = $peringatans->count();
-        $activePeringatans = $peringatans->where('status', 'active')->count();
-        $highPriority = $peringatans->where('priority', 'high')->where('status', 'active')->count();
-        $resolvedToday = $peringatans->where('status', 'resolved')
-                                     ->whereBetween('updated_at', [
-                                         Carbon::today(),
-                                         Carbon::tomorrow()
-                                     ])->count();
-        
-        return view('operator.notifikasi', compact(
-            'peringatans',
-            'greeting',
-            'currentDate',
-            'totalPeringatans',
-            'activePeringatans',
-            'highPriority',
-            'resolvedToday'
-        ));
-    }
+        if (!$notification) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Task tidak ditemukan'
+            ], 404);
+        }
 
-    public function taskUpdate()
-{
-    // Ambil semua task dari peringatan yang statusnya active atau resolved
-    $tasks = Peringatan::with('homebase')
-                      ->whereIn('status', ['active', 'resolved'])
-                      ->orderBy('created_at', 'desc')
-                      ->get();
-    
-    $greeting = $this->getGreeting();
-    $currentDate = Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y');
-    
-    // Statistik
-    $pendingTasks = $tasks->where('status', 'active')->count();
-    $doneTasks = $tasks->where('status', 'resolved')->count();
-    
-    return view('operator.taskupdate', compact(
-        'tasks',
-        'greeting',
-        'currentDate',
-        'pendingTasks',
-        'doneTasks'
-    ));
-}
-
-public function startTask($id)
-{
-    try {
-        $task = Peringatan::findOrFail($id);
-        $task->update(['status' => 'in_progress']);
+        // Mark as resolved
+        $notification->is_new = false;
+        $notification->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Task dimulai'
+            'message' => 'Task selesai dikerjakan',
+            'status' => 'resolved'
         ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Error: ' . $e->getMessage()
-        ], 500);
     }
-}
-
-public function completeTask($id)
-{
-    try {
-        $task = Peringatan::findOrFail($id);
-        $task->update(['status' => 'resolved']);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Task selesai'
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Error: ' . $e->getMessage()
-        ], 500);
-    }
-}
 }

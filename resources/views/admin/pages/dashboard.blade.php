@@ -1,3 +1,4 @@
+
 @extends('admin.layouts.app')
 
 @section('title', __('app.dashboard') . ' - Smart Waste Monitor')
@@ -15,13 +16,14 @@
 @endsection
 
 @section('content')
+<div class="max-w-5xl mx-auto">
 <div x-data="{
     bins: [],
     stats: { total: 0, full: 0, normal: 0, maintenance: 0 },
     filter: 'all',
     loading: true,
     lastUpdated: 'Loading...',
-    
+
     async fetchBins() {
         try {
             const response = await fetch('/api/admin/bins?filter=' + this.filter);
@@ -57,7 +59,7 @@ x-init="
     fetchStats(); 
     setInterval(() => { fetchBins(); fetchStats(); }, 10000);
 "
-class="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
+>
 
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
 
@@ -216,5 +218,6 @@ class="min-h-screen px-4 sm:px-6 lg:px-8 py-6">
     </div>
 </div>
 
+</div>
 </div>
 @endsection

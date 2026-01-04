@@ -5,9 +5,13 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\DashboardOperController;
 use App\Http\Controllers\BinController;
+use App\Http\Controllers\Api\BinSensorController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\Admin\ExportController;
+
+Route::post('/api/bins/update-sensor', [BinSensorController::class, 'updateFromSensor']);
+Route::get('/api/bins/test', [BinSensorController::class, 'test']); // Buat testing
 
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -32,16 +36,27 @@ Route::prefix('api/admin')->group(function () {
     Route::post('/bins/update', [DashboardController::class, 'updateBinStatus']);
 });
 
-Route::middleware(['role:operator'])->group(function () {
+
+// Route untuk Operator (dengan middleware role:operator)
+Route::middleware(['auth.check', 'role:operator'])->group(function () {
+    // Dashboard
     Route::get('/operator/dashboard', [DashboardOperController::class, 'index'])->name('operator.dashboard');
+    
+    // Vacuum Bin
     Route::get('/operator/vacuumbin', [DashboardOperController::class, 'vacuumbin'])->name('operator.vacuumbin');
-    Route::put('/vacuum/{id}/empty', [DashboardOperController::class, 'emptyVacuum'])->name('vacuum.empty');
-    Route::put('/peringatan/{id}/resolve', [DashboardOperController::class, 'resolvePeringatan'])->name('peringatan.resolve');
-    Route::get('/bin/{id}', [BinController::class, 'show'])->name('bin.detail');
+    
+    // Notifikasi
     Route::get('/operator/notifikasi', [DashboardOperController::class, 'notifikasi'])->name('operator.notifikasi');
+    
+    // Task Update
     Route::get('/operator/taskupdate', [DashboardOperController::class, 'taskUpdate'])->name('operator.taskupdate');
     Route::post('/operator/taskupdate/{id}/start', [DashboardOperController::class, 'startTask'])->name('operator.taskupdate.start');
     Route::post('/operator/taskupdate/{id}/complete', [DashboardOperController::class, 'completeTask'])->name('operator.taskupdate.complete');
+    
+    // Route lama yang mungkin masih dipakai (opsional, hapus kalau gak dipakai)
+    Route::put('/vacuum/{id}/empty', [DashboardOperController::class, 'emptyVacuum'])->name('vacuum.empty');
+    Route::put('/peringatan/{id}/resolve', [DashboardOperController::class, 'resolvePeringatan'])->name('peringatan.resolve');
+    Route::get('/bin/{id}', [BinController::class, 'show'])->name('bin.detail');
 });
 
 Route::prefix('admin/export')->name('admin.export.')->group(function () {

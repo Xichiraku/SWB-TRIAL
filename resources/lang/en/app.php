@@ -66,4 +66,32 @@ return [
     'level' => 'Level',
     'action' => 'Action',
     'view_details' => 'View Details',
+
+        // History (NEW - REQUIRED)
+    'history_log' => 'History Log',
+    'history_monitor' => 'History Log Monitor',
+    'history_desc' => 'Waste collection and maintenance records',
+
+    'total_records' => 'Total Records',
+    'collections' => 'Collections',
+    'alerts' => 'Alerts',
+
+    'filters' => 'Filters',
+    'reset_all' => 'Reset All',
+    'all_status' => 'All Status',
+    'all_bins' => 'All Bins',
+    'search_records' => 'Search records...',
+
+    'time' => 'Time',
+    'notes' => 'Notes',
+
+    'no_records' => 'No records found',
+    'try_adjust_filter' => 'Try adjusting filters or search',
+    'reset_filters' => 'Reset Filters',
+
+    'showing' => 'Showing',
+    'of' => 'of',
+    'prev' => 'Prev',
+    'next' => 'Next',
+
 ];

@@ -1,69 +1,93 @@
 <?php
 
 return [
-    // Navigation
+
+    /* =======================
+     * NAVIGATION
+     * ======================= */
     'dashboard' => 'Dasbor',
     'history' => 'Riwayat',
     'settings' => 'Pengaturan',
     'logout' => 'Keluar',
-    
-    // Dashboard
+
+    /* =======================
+     * DASHBOARD
+     * ======================= */
     'dashboard_monitoring' => 'Dasbor Monitoring',
     'last_updated' => 'Terakhir diperbarui',
     'total_bins' => 'Total Tempat Sampah',
     'full' => 'Penuh',
     'normal' => 'Normal',
-    'maintenance' => 'Pemeliharaan',
+    'maintenance' => 'Perawatan',
     'loading_bins' => 'Memuat data tempat sampah...',
     'smart_vacuum_bins' => 'Tempat Sampah Vakum Pintar',
     'no_bins_found' => 'Tidak ada tempat sampah',
-    'try_different_filter' => 'Coba pilih filter yang berbeda',
+    'try_different_filter' => 'Coba pilih filter lain',
     'capacity' => 'Kapasitas',
-    
-    // Settings
+
+    /* =======================
+     * HISTORY
+     * ======================= */
+    'history_log' => 'Riwayat Log',
+    'history_monitor' => 'Riwayat Monitoring',
+    'history_desc' => 'Catatan pengumpulan dan perawatan sampah',
+
+    // Stats
+    'total_records' => 'Total Data',
+    'collections' => 'Pengumpulan',
+    'alerts' => 'Peringatan',
+
+    // Filters
+    'filters' => 'Filter',
+    'reset_all' => 'Reset Semua',
+    'all_status' => 'Semua Status',
+    'all_bins' => 'Semua Tempat Sampah',
+    'search_records' => 'Cari data...',
+
+    // Table
+    'date' => 'Tanggal',
+    'time' => 'Waktu',
+    'bin' => 'Tempat Sampah',
+    'status' => 'Status',
+    'notes' => 'Catatan',
+
+    // Empty state
+    'no_records' => 'Tidak ada data',
+    'try_adjust_filter' => 'Coba ubah filter atau pencarian',
+    'reset_filters' => 'Reset Filter',
+
+    // Pagination
+    'showing' => 'Menampilkan',
+    'of' => 'dari',
+    'prev' => 'Sebelumnya',
+    'next' => 'Selanjutnya',
+
+    /* =======================
+     * SETTINGS
+     * ======================= */
     'notifications' => 'Notifikasi',
     'allow_notifications' => 'Izinkan Notifikasi',
-    'master_switch_notif' => 'Saklar utama untuk semua jenis notifikasi',
+    'master_switch_notif' => 'Saklar utama semua notifikasi',
     'alert_types' => 'Jenis Peringatan',
+
     'capacity_full_alert' => 'Peringatan Kapasitas Penuh',
-    'notify_when_full' => 'Beritahu ketika tempat sampah mencapai batas kapasitas',
+    'notify_when_full' => 'Beritahu saat tempat sampah penuh',
+
     'battery_low_alert' => 'Peringatan Baterai Lemah',
-    'notify_low_battery' => 'Beritahu ketika baterai surya hampir habis',
+    'notify_low_battery' => 'Beritahu saat baterai lemah',
+
     'maintenance_alert' => 'Peringatan Perawatan',
-    'notify_maintenance' => 'Beritahu ketika perawatan diperlukan',
+    'notify_maintenance' => 'Beritahu saat perlu perawatan',
+
     'delivery_methods' => 'Metode Pengiriman',
     'email_notification' => 'Notifikasi Email',
-    'send_via_email' => 'Kirim peringatan melalui email',
+    'send_via_email' => 'Kirim melalui email',
     'push_notification' => 'Notifikasi Push',
-    'send_via_browser' => 'Notifikasi melalui browser',
-    
+    'send_via_browser' => 'Kirim melalui browser',
+
     'system_configuration' => 'Konfigurasi Sistem',
     'operation_mode' => 'Mode Operasi',
     'automatic' => 'Otomatis',
-    'system_auto_trigger' => 'Sistem otomatis memicu peringatan dan pemeliharaan',
-    'alert_threshold' => 'Ambang Batas Peringatan',
-    'collection_threshold' => 'Ambang Batas Pengumpulan',
-    'trigger_collection' => 'Picu peringatan pengumpulan saat kapasitas mencapai level ini',
-    'battery_threshold' => 'Ambang Batas Baterai Rendah',
-    'trigger_battery' => 'Picu peringatan baterai saat level di bawah ambang batas ini',
-    'refresh_interval' => 'Interval Refresh Data',
-    'how_often_refresh' => 'Seberapa sering refresh data dari sensor IoT',
-    
-    'display_preferences' => 'Preferensi Tampilan',
-    'theme' => 'Tema',
-    'language' => 'Bahasa',
-    'units' => 'Satuan',
-    
+
     'settings_saved' => 'Pengaturan berhasil disimpan!',
-    
-    // History
-    'collection_history' => 'Riwayat Pengumpulan',
-    'filter_by_status' => 'Filter berdasarkan Status',
-    'all' => 'Semua',
-    'date' => 'Tanggal',
-    'bin_location' => 'Lokasi Tempat Sampah',
-    'status' => 'Status',
-    'level' => 'Level',
-    'action' => 'Aksi',
-    'view_details' => 'Lihat Detail',
 ];
