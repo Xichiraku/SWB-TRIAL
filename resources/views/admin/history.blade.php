@@ -47,6 +47,40 @@
 
     </div>
 
+    {{-- EXPORT PDF CARD --}}
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm mb-4">
+        <div class="p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-bold text-gray-800">Export Report</h3>
+                    <p class="text-xs text-gray-600">Download history log as PDF</p>
+                </div>
+            </div>
+
+            <button @click="exportToPDF()" 
+                class="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 
+                       text-white rounded-lg text-sm font-medium hover:from-red-600 hover:to-red-700 
+                       transition shadow-sm hover:shadow-md">
+                
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                
+                <span>Export to PDF</span>
+            </button>
+
+        </div>
+    </div>
+
     {{-- FILTER CARD --}}
     <div class="bg-white rounded-xl border border-gray-200 shadow-sm mb-6">
 
@@ -265,6 +299,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
+{{-- JSPDF LIBRARY --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
 {{-- ALPINE JS LOGIC --}}
 <script>
 document.addEventListener('alpine:init', () => {
@@ -391,6 +429,147 @@ document.addEventListener('alpine:init', () => {
                 'Alert': 'bg-rose-100 text-rose-700',
                 'Full': 'bg-blue-100 text-blue-700',
             }[status] || 'bg-gray-100 text-gray-600';
+        },
+
+        exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'mm', 'a4'); // landscape orientation
+            
+            // Header
+            doc.setFillColor(59, 130, 246); // blue
+            doc.rect(0, 0, 297, 35, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont(undefined, 'bold');
+            doc.text('History Log Monitor', 15, 15);
+            
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            doc.text('Waste Collection and Maintenance Records', 15, 23);
+            
+            // Export info
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID');
+            const timeStr = now.toLocaleTimeString('id-ID');
+            doc.text(`Exported: ${dateStr} ${timeStr}`, 15, 30);
+            
+            // Stats summary
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('Summary Statistics', 15, 45);
+            
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(10);
+            doc.text(`Total Records: ${this.allRecords.length}`, 15, 52);
+            doc.text(`Normal: ${this.countByStatus('Empetied')}`, 70, 52);
+            doc.text(`Maintenance: ${this.countMaintenance()}`, 120, 52);
+            doc.text(`Full: ${this.countByStatus('Alert')}`, 180, 52);
+            
+            // Applied Filters
+            if (this.statusFilter || this.binFilter || this.dateFilter || this.searchQuery) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Applied Filters:', 15, 62);
+                doc.setFont(undefined, 'normal');
+                
+                let filterY = 62;
+                if (this.statusFilter) {
+                    filterY += 6;
+                    doc.text(`• Status: ${this.statusFilter}`, 20, filterY);
+                }
+                if (this.binFilter) {
+                    filterY += 6;
+                    doc.text(`• Bin: ${this.binFilter}`, 20, filterY);
+                }
+                if (this.dateFilter) {
+                    filterY += 6;
+                    doc.text(`• Date: ${this.dateFilter}`, 20, filterY);
+                }
+                if (this.searchQuery) {
+                    filterY += 6;
+                    doc.text(`• Search: ${this.searchQuery}`, 20, filterY);
+                }
+            }
+            
+            // Table
+            const tableData = this.filteredRecords.map(record => [
+                record.date,
+                record.time,
+                record.bin,
+                record.status,
+                record.notes
+            ]);
+            
+            doc.autoTable({
+                startY: this.statusFilter || this.binFilter || this.dateFilter || this.searchQuery ? 80 : 65,
+                head: [['Date', 'Time', 'Bin', 'Status', 'Notes']],
+                body: tableData,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [59, 130, 246],
+                    textColor: 255,
+                    fontSize: 10,
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                bodyStyles: {
+                    fontSize: 9,
+                    halign: 'center'
+                },
+                columnStyles: {
+                    0: { cellWidth: 30 },  // Date
+                    1: { cellWidth: 25 },  // Time
+                    2: { cellWidth: 30 },  // Bin
+                    3: { cellWidth: 35 },  // Status
+                    4: { cellWidth: 'auto', halign: 'left' }  // Notes
+                },
+                didParseCell: function(data) {
+                    // Color coding for status
+                    if (data.column.index === 3 && data.section === 'body') {
+                        const status = data.cell.raw;
+                        if (status === 'Empetied') {
+                            data.cell.styles.fillColor = [209, 250, 229];
+                            data.cell.styles.textColor = [4, 120, 87];
+                        } else if (status === 'Battery Low') {
+                            data.cell.styles.fillColor = [254, 243, 199];
+                            data.cell.styles.textColor = [180, 83, 9];
+                        } else if (status === 'Alert') {
+                            data.cell.styles.fillColor = [254, 226, 226];
+                            data.cell.styles.textColor = [185, 28, 28];
+                        } else if (status === 'Full') {
+                            data.cell.styles.fillColor = [219, 234, 254];
+                            data.cell.styles.textColor = [30, 64, 175];
+                        }
+                    }
+                }
+            });
+            
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(128, 128, 128);
+                doc.text(
+                    `Page ${i} of ${pageCount}`,
+                    doc.internal.pageSize.width / 2,
+                    doc.internal.pageSize.height - 10,
+                    { align: 'center' }
+                );
+                doc.text(
+                    'Smart Waste Management System - Politeknik Batam',
+                    15,
+                    doc.internal.pageSize.height - 10
+                );
+            }
+            
+            // Save
+            const filename = `history-log-${dateStr.replace(/\//g, '-')}.pdf`;
+            doc.save(filename);
+            
+            // Optional: Show success message
+            alert('PDF exported successfully!');
         }
 
     }));
