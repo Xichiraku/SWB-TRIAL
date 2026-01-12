@@ -42,7 +42,7 @@
         {{-- Alerts --}}
         <div class="bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl p-5 sm:p-6 text-center hover:shadow-lg transition hover:-translate-y-1">
             <p class="text-4xl sm:text-5xl font-bold text-white" x-text="countByStatus('Alert')"></p>
-            <p class="text-xs sm:text-sm text-pink-50 mt-1">Alerts</p>
+            <p class="text-xs sm:text-sm text-pink-50 mt-1">Full</p>
         </div>
 
     </div>
@@ -81,7 +81,6 @@
                         <option>Empetied</option>
                         <option>Full</option>
                         <option>Battery Low</option>
-                        <option>Full</option>
                     </select>
                 </div>
 
