@@ -79,13 +79,13 @@ class DashboardController extends Controller
             if ($statusText === 'Maintenance') $color = 'orange';
 
             return [
-                'bin_id'   => $bin->bin_id ?? 'Unknown', // 👈 FIX: Pakai bin_id
-                'battery'  => $bin->battery ?? 0, // 👈 FIX: Pakai battery (bukan battery_level)
+                'bin_id'   => $bin->bin_id ?? 'Unknown', // Pakai bin_id
+                'battery'  => $bin->battery ?? 0, // Pakai battery (bukan battery_level)
                 'capacity' => $bin->capacity ?? 0,
                 'status'   => $statusText,
                 'color'    => $color,
                 'location' => $bin->location ?? 'Unknown Location',
-                'name'     => $bin->name ?? "Bin #{$bin->bin_id}", // 👈 FIX: Pakai field name dari database
+                'name'     => $bin->name ?? "Bin #{$bin->bin_id}", // Pakai field name dari database
             ];
         });
 
@@ -138,9 +138,9 @@ class DashboardController extends Controller
     public function updateBinStatus(Request $request)
     {
         $validated = $request->validate([
-            'bin_id' => 'required|string', // 👈 FIX: Pakai bin_id
+            'bin_id' => 'required|string', // Pakai bin_id
             'capacity' => 'required|integer|min:0|max:100',
-            'battery' => 'required|integer|min:0|max:100', // 👈 FIX: Pakai battery
+            'battery' => 'required|integer|min:0|max:100', // Pakai battery
             'status' => 'nullable|string'
         ]);
 

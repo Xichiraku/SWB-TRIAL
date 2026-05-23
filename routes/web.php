@@ -10,13 +10,16 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\Admin\ExportController;
 
+// API Routes untuk Sensor
 Route::post('/api/bins/update-sensor', [BinSensorController::class, 'updateFromSensor']);
 Route::get('/api/bins/test', [BinSensorController::class, 'test']); // Buat testing
 
+// Authentication Routes
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Admin Routes (Role: Admin)
 Route::middleware(['role:admin'])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     
@@ -28,16 +31,21 @@ Route::middleware(['role:admin'])->group(function () {
 
     Route::get('/admin/history', [HistoryController::class, 'index'])->name('admin.history');
     Route::get('/admin/history/refresh', [HistoryController::class, 'refresh'])->name('admin.history.refresh');
+
+    // Route Report (Menampilkan halaman report.blade.php)
+    Route::get('/admin/report', function () {
+        return view('admin.report');
+    })->name('admin.report');
 });
 
+// Admin API Routes
 Route::prefix('api/admin')->group(function () {
     Route::get('/bins', [DashboardController::class, 'getBins']);
     Route::get('/stats', [DashboardController::class, 'getStats']);
     Route::post('/bins/update', [DashboardController::class, 'updateBinStatus']);
 });
 
-
-// Route untuk Operator (dengan middleware role:operator)
+// Operator Routes (Role: Operator)
 Route::middleware(['auth.check', 'role:operator'])->group(function () {
     // Dashboard
     Route::get('/operator/dashboard', [DashboardOperController::class, 'index'])->name('operator.dashboard');
@@ -48,17 +56,18 @@ Route::middleware(['auth.check', 'role:operator'])->group(function () {
     // Notifikasi
     Route::get('/operator/notifikasi', [DashboardOperController::class, 'notifikasi'])->name('operator.notifikasi');
     
-    // Task Update
+    // Task Update 
     Route::get('/operator/taskupdate', [DashboardOperController::class, 'taskUpdate'])->name('operator.taskupdate');
     Route::post('/operator/taskupdate/{id}/start', [DashboardOperController::class, 'startTask'])->name('operator.taskupdate.start');
     Route::post('/operator/taskupdate/{id}/complete', [DashboardOperController::class, 'completeTask'])->name('operator.taskupdate.complete');
     
-    // Route lama yang mungkin masih dipakai (opsional, hapus kalau gak dipakai)
+    // Route Opsional / Legacy
     Route::put('/vacuum/{id}/empty', [DashboardOperController::class, 'emptyVacuum'])->name('vacuum.empty');
     Route::put('/peringatan/{id}/resolve', [DashboardOperController::class, 'resolvePeringatan'])->name('peringatan.resolve');
     Route::get('/bin/{id}', [BinController::class, 'show'])->name('bin.detail');
 });
 
+// Export Routes
 Route::prefix('admin/export')->name('admin.export.')->group(function () {
     Route::get('/vacuum', [ExportController::class, 'exportVacuum'])->name('vacuum');
     Route::get('/homebase', [ExportController::class, 'exportHomebase'])->name('homebase');
