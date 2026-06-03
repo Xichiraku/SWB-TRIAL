@@ -3,53 +3,135 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Homebase;
-use App\Models\Vacuum; // Kembali menggunakan Vacuum
+use App\Models\Bin;
 use App\Models\Notification;
+use App\Models\Peringatan;
 
 class DashboardOperController extends Controller
 {
+    // OVERVIEW DASHBOARD
     public function index()
     {
-        // Menggunakan relasi vacuums sesuai kode awal
-        $homebases = Homebase::with('vacuums')->get()->map(function($homebase) {
+        $homebases = Homebase::with('bins')->get()->map(function ($homebase) {
+            $bins = $homebase->bins;
             return [
-                'name' => $homebase->name,
-                'location' => $homebase->location,
-                'status' => $homebase->status,
-                'vacuum_assigned' => $homebase->vacuum_assigned,
-                'active' => $homebase->vacuums()->where('is_active', true)->count(),
+                'name'         => $homebase->name,
+                'location'     => $homebase->location,
+                'status'       => $homebase->status,
+                'bin_assigned' => $bins->count(),
+                'active'       => $bins->where('is_active', true)->count(),
             ];
         });
 
-        $warnings = [];
-        $fullVacuums = Vacuum::where(function($query) {
-            $query->where('status', 'Full')
-                  ->orWhere('capacity', '>=', 85);
-        })->where('status', '!=', 'Maintenance')->get();
-        
-        foreach ($fullVacuums as $v) {
-            $warnings[] = [
-                'type' => 'critical',
-                'title' => ($v->name ?? "Vacuum #{$v->vacuum_code}") . " Penuh!",
-                'message' => "Kapasitas {$v->capacity}%. Segera kosongkan di {$v->location}.",
-                'time' => $v->updated_at ? $v->updated_at->diffForHumans() : 'Baru saja'
-            ];
+        // Ambil peringatan aktif dari collection peringatans
+        $warnings = Peringatan::active()
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        if ($warnings->isEmpty()) {
+            $warnings = Bin::needsAttention()->get()->map(function ($bin) {
+                $label = $bin->name ?? "Bin #{$bin->bin_id}";
+
+                if ($bin->isFull()) {
+                    return (object) [
+                        'type'     => 'capacity',
+                        'priority' => 'high',
+                        'title'    => "{$label} Penuh!",
+                        'message'  => "Organik {$bin->organic_capacity}% / Anorganik {$bin->anorganic_capacity}%. Segera kosongkan di {$bin->location}.",
+                        'time'     => $bin->updated_at?->diffForHumans() ?? 'Baru saja',
+                    ];
+                }
+
+                return (object) [
+                    'type'     => 'battery',
+                    'priority' => 'medium',
+                    'title'    => "{$label} Baterai Rendah",
+                    'message'  => "Baterai {$bin->battery}% di {$bin->location}.",
+                    'time'     => $bin->updated_at?->diffForHumans() ?? 'Baru saja',
+                ];
+            });
         }
 
         return view('operator.dashboard', compact('homebases', 'warnings'));
     }
 
-    public function vacuumbin()
+    // BIN MONITORING
+    public function bins()
     {
-        $vacuums = Vacuum::all();
-        return view('operator.vacuumbin', compact('vacuums'));
+        $bins = Bin::with('homebase')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        return view('operator.bins', compact('bins'));
     }
 
+    // NOTIFIKASI
     public function notifikasi()
     {
-        $notifications = Notification::where('is_new', true)->orderBy('created_at', 'desc')->get();
+        $userId = session('user')['id'];
+
+        $notifications = Notification::forOperator($userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Tandai semua sebagai sudah dilihat setelah halaman dibuka
+        Notification::forOperator($userId)->unread()->update(['is_new' => false]);
+
         return view('operator.notifikasi', compact('notifications'));
+    }
+
+    // TASK UPDATE
+    public function taskUpdate()
+    {
+        $userId = session('user')['id'];
+
+        // Tampilkan task milik operator ini, pending & in_progress duluan
+        $tasks = Notification::forOperator($userId)
+            ->tasks()
+            ->orderByRaw(['task_status' => 1, 'created_at' => -1])
+            ->get();
+
+        return view('operator.taskupdate', compact('tasks'));
+    }
+
+    public function startTask(string $id)
+    {
+        $task = Notification::findOrFail($id);
+        $this->authorizeTask($task);
+
+        $task->markInProgress();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Task dimulai.',
+            'status'  => $task->task_status,
+        ]);
+    }
+
+    public function completeTask(Request $request, string $id)
+    {
+        $request->validate([
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $task = Notification::findOrFail($id);
+        $this->authorizeTask($task);
+
+        $task->markDone($request->input('notes', ''));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Task selesai.',
+            'status'  => $task->task_status,
+        ]);
+    }
+
+    // PRIVATE HELPERS
+    private function authorizeTask(Notification $task): void
+    {
+        if ($task->assigned_to !== session('user')['id']) {
+            abort(403, 'Akses ditolak.');
+        }
     }
 }

@@ -1,5 +1,4 @@
 <?php
-// app/Models/Setting.php
 
 namespace App\Models;
 
@@ -22,18 +21,18 @@ class Setting extends Model
         'refresh_interval',
         'theme',
         'language',
-        'units'
+        'units',
     ];
 
     protected $casts = [
-        'notif_enabled' => 'boolean',
-        'capacity_alert' => 'boolean',
-        'battery_alert' => 'boolean',
-        'nurse_alert' => 'boolean',
-        'email_notif' => 'boolean',
-        'push_notif' => 'boolean',
+        'notif_enabled'        => 'boolean',
+        'capacity_alert'       => 'boolean',
+        'battery_alert'        => 'boolean',
+        'nurse_alert'          => 'boolean',
+        'email_notif'          => 'boolean',
+        'push_notif'           => 'boolean',
         'collection_threshold' => 'integer',
-        'battery_threshold' => 'integer',
-        'refresh_interval' => 'integer'
+        'battery_threshold'    => 'integer',
+        'refresh_interval'     => 'integer',
     ];
 }

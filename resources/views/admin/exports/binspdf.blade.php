@@ -30,38 +30,42 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>Kode</th>
+                <th>Bin ID</th>
+                <th>Nama</th>
                 <th>Homebase</th>
                 <th>Lokasi</th>
                 <th>Status</th>
                 <th>Baterai (%)</th>
-                <th>Kapasitas (%)</th>
+                <th>Kapasitas Organik (%)</th>
+                <th>Kapasitas Anorganik (%)</th>
                 <th>Update Terakhir</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($vacuums as $index => $vacuum)
+            @forelse($bins as $index => $bin)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $vacuum->code }}</td>
-                <td>{{ $vacuum->homebase->name ?? 'N/A' }}</td>
-                <td>{{ $vacuum->homebase->location ?? 'N/A' }}</td>
+                <td>{{ $bin->bin_id }}</td>
+                <td>{{ $bin->name ?? '-' }}</td>
+                <td>{{ $bin->homebase->name ?? 'N/A' }}</td>
+                <td>{{ $bin->location ?? 'N/A' }}</td>
                 <td>
-                    <span class="badge 
-                        @if($vacuum->status === 'active') badge-success
-                        @elseif($vacuum->status === 'maintenance') badge-warning
+                    <span class="badge
+                        @if($bin->status === 'Normal') badge-success
+                        @elseif($bin->status === 'Maintenance') badge-warning
                         @else badge-danger
                         @endif">
-                        {{ ucfirst($vacuum->status) }}
+                        {{ $bin->status }}
                     </span>
                 </td>
-                <td>{{ $vacuum->battery_level }}%</td>
-                <td>{{ $vacuum->capacity }}%</td>
-                <td>{{ $vacuum->updated_at->format('d/m/Y H:i') }}</td>
+                <td>{{ $bin->battery ?? '-' }}%</td>
+                <td>{{ $bin->organic_capacity ?? '-' }}%</td>
+                <td>{{ $bin->anorganic_capacity ?? '-' }}%</td>
+                <td>{{ $bin->updated_at?->format('d/m/Y H:i') ?? '-' }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="8" style="text-align: center; padding: 20px;">Tidak ada data</td>
+                <td colspan="10" style="text-align: center; padding: 20px;">Tidak ada data</td>
             </tr>
             @endforelse
         </tbody>

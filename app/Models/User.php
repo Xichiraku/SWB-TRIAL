@@ -11,32 +11,20 @@ class User extends Model implements Authenticatable
 {
     use AuthenticatableTrait;
 
-    // PENTING: Ubah connection jadi mongodb
     protected $connection = 'mongodb';
-    
-    // Nama collection di MongoDB
     protected $collection = 'users';
 
-    /**
-     * The attributes that are mass assignable.
-     */
     protected $fillable = [
         'username',
         'password',
-        'role',
+        'role',         // 'admin' | 'operator'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     */
     protected $hidden = [
         'password',
     ];
 
-    /**
-     * Hash password otomatis saat create/update
-     */
-    public function setPasswordAttribute($value)
+    public function setPasswordAttribute($value): void
     {
         $this->attributes['password'] = Hash::make($value);
     }

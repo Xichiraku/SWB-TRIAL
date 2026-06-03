@@ -8,31 +8,43 @@ class Homebase extends Model
 {
     protected $connection = 'mongodb';
     protected $collection = 'homebases';
-    
+
     protected $fillable = [
         'name',
         'location',
-        'status',
-        'vacuum_assigned',
-        'active_vacuums',
+        'status',       // 'Active' | 'Inactive'
         'temperature',
-        'power_status'
+        'power_status',
+        // vacuum_assigned & active_vacuums dihapus —
+        // dihitung live dari relasi bins()
     ];
 
     protected $casts = [
-        'vacuum_assigned' => 'integer',
-        'active_vacuums' => 'integer',
         'temperature' => 'float',
+        'created_at'  => 'datetime',
+        'updated_at'  => 'datetime',
     ];
 
-    // Menggunakan nama relasi awal: vacuums
-    public function vacuums()
+    // -------------------------------------------------------
+    // RELATIONS
+    // -------------------------------------------------------
+
+    public function bins()
     {
-        return $this->hasMany(Vacuum::class, 'homebase_id', '_id');
+        return $this->hasMany(Bin::class, 'homebase_id', '_id');
     }
 
-    public function getActiveAttribute()
+    // -------------------------------------------------------
+    // ACCESSORS (live count, tidak disimpan ke DB)
+    // -------------------------------------------------------
+
+    public function getBinAssignedAttribute(): int
     {
-        return $this->vacuums()->where('is_active', true)->count();
+        return $this->bins()->count();
+    }
+
+    public function getActiveBinsAttribute(): int
+    {
+        return $this->bins()->where('is_active', true)->count();
     }
 }
