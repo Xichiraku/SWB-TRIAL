@@ -26,13 +26,13 @@
     {{-- ===== SIDEBAR ===== --}}
     <aside
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-        class="fixed top-0 left-0 h-full w-64 bg-[#1F4D1F] z-30 flex flex-col transition-transform duration-300 ease-in-out
-               lg:translate-x-0 lg:static lg:flex lg:shrink-0"
+        class="fixed top-0 left-0 h-screen w-64 bg-[#1F4D1F] z-30 flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto
+               lg:translate-x-0 lg:fixed lg:top-0 lg:left-0 lg:h-screen lg:w-64"
     >
         {{-- Logo --}}
         <div class="flex items-center gap-3 px-6 py-5 border-b border-white/10">
             <img src="{{ asset('assets/images/logo.png') }}" alt="Logo" class="h-10 w-auto brightness-0 invert">
-            <span class="text-white font-bold italic uppercase text-sm leading-tight">Smartwaste<br>Bin</span>
+            <span class="text-white font-bold italic uppercase text-sm leading-tight">Smart Waste Bin</span>
         </div>
 
         {{-- Nav --}}
@@ -47,12 +47,6 @@
                 <span>Overview</span>
             </a>
 
-            <a href="{{ route('operator.vacuumbin') }}"
-               class="flex items-center gap-3 px-3 py-3 rounded-xl font-semibold text-sm transition-all
-                      {{ request()->routeIs('operator.vacuumbin') ? 'bg-white text-[#1F4D1F]' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
-                <i data-lucide="trash-2" class="w-5 h-5 shrink-0"></i>
-                <span>Vacuum Bins</span>
-            </a>
 
             <a href="{{ route('operator.notifikasi') }}"
                class="flex items-center gap-3 px-3 py-3 rounded-xl font-semibold text-sm transition-all
@@ -92,7 +86,7 @@
     </aside>
 
     {{-- ===== MAIN AREA ===== --}}
-    <div class="flex-1 flex flex-col min-w-0">
+    <div class="flex-1 flex flex-col min-w-0 lg:ml-64">
 
         {{-- Topbar (mobile hamburger + page title) --}}
         <header class="bg-white border-b border-green-100 shadow-sm sticky top-0 z-10 flex items-center gap-4 px-4 sm:px-6 py-3 lg:hidden">

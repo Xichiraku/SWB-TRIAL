@@ -14,6 +14,20 @@
         <div class="px-6 py-2 border-2 border-slate-800 rounded-full font-bold text-slate-800">{{ now()->translatedFormat('l, d F Y') }}</div>
     </div>
 
+    <div class="bg-red-50 border border-red-100 rounded-[30px] p-8">
+        <h2 class="text-xl font-bold text-red-600 mb-6 flex items-center gap-2">
+            <i data-lucide="alert-triangle"></i> Peringatan Penting
+        </h2>
+        <div class="space-y-4">
+            @foreach($warnings as $w)
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-red-500">
+                <h3 class="font-black text-slate-800 uppercase">{{ $w->title }}</h3>
+                <p class="text-slate-600 text-sm">{{ $w->message }}</p>
+            </div>
+            @endforeach
+        </div>
+    </div>
+
     <div class="bg-white rounded-[30px] p-8 shadow-sm border border-green-200">
         <h2 class="text-xl font-bold text-slate-800 mb-6">Homebase Monitoring</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -24,7 +38,7 @@
                 <div class="flex gap-4">
                     <div>
                         <p class="text-[10px] font-bold text-slate-400 uppercase">Unit</p>
-                        <p class="text-xl font-black">{{ $h['vacuum_assigned'] }}</p>
+                        <p class="text-xl font-black">{{ $h['bin_assigned'] }}</p>
                     </div>
                     <div class="w-px bg-slate-200"></div>
                     <div>
@@ -32,20 +46,6 @@
                         <p class="text-xl font-black text-blue-600">{{ $h['active'] }}</p>
                     </div>
                 </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-
-    <div class="bg-red-50 border border-red-100 rounded-[30px] p-8">
-        <h2 class="text-xl font-bold text-red-600 mb-6 flex items-center gap-2">
-            <i data-lucide="alert-triangle"></i> Peringatan Penting
-        </h2>
-        <div class="space-y-4">
-            @foreach($warnings as $w)
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-red-500">
-                <h3 class="font-black text-slate-800 uppercase">{{ $w['title'] }}</h3>
-                <p class="text-slate-600 text-sm">{{ $w['message'] }}</p>
             </div>
             @endforeach
         </div>

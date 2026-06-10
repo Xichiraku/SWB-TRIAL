@@ -9,7 +9,7 @@ class CheckAuth
 {
     public function handle(Request $request, Closure $next)
     {
-        // Cek session user
+        
         if (!$request->session()->has('user')) {
             return redirect('/');
         }

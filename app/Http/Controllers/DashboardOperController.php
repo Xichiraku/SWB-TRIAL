@@ -30,7 +30,7 @@ class DashboardOperController extends Controller
             ->get();
 
         if ($warnings->isEmpty()) {
-            $warnings = Bin::needsAttention()->get()->map(function ($bin) {
+            $warnings = Bin::query()->needsAttention()->get()->map(function ($bin) {
                 $label = $bin->name ?? "Bin #{$bin->bin_id}";
 
                 if ($bin->isFull()) {
@@ -89,7 +89,8 @@ class DashboardOperController extends Controller
         // Tampilkan task milik operator ini, pending & in_progress duluan
         $tasks = Notification::forOperator($userId)
             ->tasks()
-            ->orderByRaw(['task_status' => 1, 'created_at' => -1])
+            ->orderBy('task_status', 'asc')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return view('operator.taskupdate', compact('tasks'));

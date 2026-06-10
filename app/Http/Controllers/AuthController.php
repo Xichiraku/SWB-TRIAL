@@ -26,7 +26,12 @@ class AuthController extends Controller
             'role'     => 'required|in:admin,operator',
         ]);
 
-        $user = User::where('username', $request->username)->first();
+        // Case-insensitive lookup: MongoDB is case-sensitive by default,
+        // so use a regex match to allow login regardless of username case.
+        $username = $request->username;
+        $user = User::whereRaw([
+            'username' => new \MongoDB\BSON\Regex('^' . preg_quote($username, '/') . '$', 'i')
+        ])->first();
 
         if (!$user) {
             return back()->withErrors(['login' => 'Username tidak ditemukan.'])->withInput();

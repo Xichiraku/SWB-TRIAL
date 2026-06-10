@@ -16,13 +16,13 @@ class DashboardController extends Controller
         return view('admin.pages.dashboard');
     }
 
-    // Detail Bin
+    
     public function detail($code)
     {
-        // Cari bin berdasarkan bin_id (bukan code)
+        
         $bin = Bin::where('bin_id', $code)->firstOrFail();
 
-        // Tentukan Status
+        
         $statusText = 'Normal';
         $statusBadgeClass = 'bg-green-100 text-green-700';
         $statusIcon = 'check-circle';
@@ -40,14 +40,14 @@ class DashboardController extends Controller
         return view('admin.pages.bindetail', compact('bin', 'statusText', 'statusBadgeClass', 'statusIcon'));
     }
 
-    // API: Get Bins
+    
     public function getBins(Request $request)
     {
         $filter = $request->get('filter', 'all');
         
         $query = Bin::query(); 
         
-        // Apply filter
+        
         if ($filter === 'Full') {
             $query->where(function($q) {
                 $q->where('status', 'Full')
@@ -62,9 +62,9 @@ class DashboardController extends Controller
         
         $rawBins = $query->orderBy('bin_id', 'asc')->get();
 
-        // 👇 FIX: Mapping data sesuai struktur database yang benar
+        
         $bins = $rawBins->map(function($bin) {
-            // Tentukan status text
+            
             $statusText = 'Normal';
             
             if ($bin->status === 'Maintenance') {
@@ -73,26 +73,26 @@ class DashboardController extends Controller
                 $statusText = 'Full';
             }
 
-            // Tentukan warna
+            
             $color = 'green';
             if ($statusText === 'Full') $color = 'red';
             if ($statusText === 'Maintenance') $color = 'orange';
 
             return [
-                'bin_id'   => $bin->bin_id ?? 'Unknown', // Pakai bin_id
-                'battery'  => $bin->battery ?? 0, // Pakai battery (bukan battery_level)
+                'bin_id'   => $bin->bin_id ?? 'Unknown', 
+                'battery'  => $bin->battery ?? 0, 
                 'capacity' => $bin->capacity ?? 0,
                 'status'   => $statusText,
                 'color'    => $color,
                 'location' => $bin->location ?? 'Unknown Location',
-                'name'     => $bin->name ?? "Bin #{$bin->bin_id}", // Pakai field name dari database
+                'name'     => $bin->name ?? "Bin #{$bin->bin_id}", 
             ];
         });
 
-        // Calculate stats - FIXED: Hindari double counting
+        
         $allBins = Bin::all();
         
-        // Hitung bins yang penuh (status Full ATAU capacity >= 85, tapi bukan Maintenance)
+        
         $fullBins = $allBins->filter(function($bin) {
             return ($bin->status === 'Full' || $bin->capacity >= 85) 
                    && $bin->status !== 'Maintenance';
@@ -103,7 +103,7 @@ class DashboardController extends Controller
             'data' => $bins,
             'stats' => [
                 'total' => $allBins->count(), 
-                'full' => $fullBins->count(), // 👈 FIX: Pakai filter, bukan double count
+                'full' => $fullBins->count(), 
                 'normal' => $allBins->filter(function($bin) {
                     return $bin->status === 'Normal' && $bin->capacity < 85;
                 })->count(),
@@ -125,7 +125,7 @@ class DashboardController extends Controller
                 'normal_bins' => $bins->where('capacity', '<', 85)->count(),
                 'maintenance_bins' => $bins->where('status', 'Maintenance')->count(),
                 'average_capacity' => round($bins->avg('capacity'), 1),
-                'average_battery' => round($bins->avg('battery'), 1), // 👈 FIX: Pakai battery
+                'average_battery' => round($bins->avg('battery'), 1), 
                 'needs_attention' => $bins->filter(function($bin) {
                     return $bin->capacity >= 85 || $bin->battery <= 20;
                 })->count(),
@@ -134,7 +134,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    // API: Update Bin Status
+    
     public function updateBinStatus(Request $request)
     {
         $validated = $request->validate([

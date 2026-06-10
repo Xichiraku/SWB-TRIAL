@@ -18,7 +18,7 @@
 
     <div class="bg-white rounded-[30px] p-6 lg:p-10 shadow-sm border border-green-200 w-full">
         <div class="space-y-4 max-w-5xl mx-auto">
-            @forelse($notifikasi as $notif)
+            @forelse($notifications as $notif)
             <div class="bg-white border border-slate-100 rounded-2xl p-6 relative hover:shadow-md transition-all border-l-8 
                 @if($notif->type === 'critical') border-red-500 
                 @elseif($notif->type === 'warning') border-orange-400 

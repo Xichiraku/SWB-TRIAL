@@ -207,18 +207,6 @@
 
                         </div>
 
-                        <!-- TERM -->
-                        <div class="flex items-center gap-2 mb-8">
-
-                            <input type="checkbox"
-                                   class="w-4 h-4">
-
-                            <label class="text-sm text-gray-700">
-                                I Agree to the Term & Condition
-                            </label>
-
-                        </div>
-
                         <!-- BUTTON -->
                         <button type="submit"
                                 class="w-full bg-[#2F5D2F] hover:bg-[#234723] text-white py-3 rounded-md font-semibold text-lg transition duration-300">
