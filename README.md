@@ -1,59 +1,136 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🗑️ SWB-TRIAL — Smart Waste Bin Monitoring System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem monitoring tempat sampah pintar berbasis web yang terintegrasi dengan sensor ESP32. Memantau kapasitas sampah secara real-time, mengelola jadwal pengangkutan, dan memberikan notifikasi otomatis kepada operator.
 
-## About Laravel
+## Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| Layer | Teknologi |
+|-------|-----------|
+| Framework | [Laravel 12](https://laravel.com) (PHP 8.2+) |
+| Database | [MongoDB](https://www.mongodb.com/) via `mongodb/laravel-mongodb` |
+| Frontend | Tailwind CSS 4, Vite 7 |
+| PDF Export | `barryvdh/laravel-dompdf` |
+| Hardware | ESP32 + sensor ultrasonik (API endpoint) |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Fitur
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Admin
+- **Dashboard** — monitoring status semua tempat sampah (kapasitas, lokasi, kondisi)
+- **Detail Bin** — lihat detail per titik sampah
+- **Pengaturan** — konfigurasi threshold & pengaturan sistem
+- **History Log** — riwayat aktivitas pengangkutan
+- **Laporan & Export** — cetak/export data bin, homebase, peringatan (PDF)
 
-## Learning Laravel
+### Operator
+- **Dashboard** — ringkasan tugas harian
+- **Daftar Bin** — lihat status tempat sampah yang ditugaskan
+- **Notifikasi** — peringatan otomatis saat kapasitas penuh
+- **Task Update** — mulai & selesaikan tugas pengangkutan
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### API Sensor (ESP32)
+- `POST /api/bins/update-sensor` — terima data kapasitas dari sensor ESP32
+- `GET /api/bins/test` — endpoint test koneksi sensor
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Persyaratan
 
-## Laravel Sponsors
+- PHP >= 8.2
+- Composer
+- Node.js & npm
+- MongoDB (local atau Atlas)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Instalasi
 
-### Premium Partners
+```bash
+# 1. Clone & masuk ke direktori
+git clone <repo-url> && cd SWB-TRIAL
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# 2. Install dependency PHP & JS
+composer install
+npm install
 
-## Contributing
+# 3. Buat file .env
+cp .env.example .env
+php artisan key:generate
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# 4. Konfigurasi database di .env
+#    DB_CONNECTION=mongodb
+#    MONGO_URI=mongodb://localhost:27017
+#    MONGO_DATABASE=swb_trial
 
-## Code of Conduct
+# 5. Jalankan migrasi & seeder
+php artisan migrate --seed
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 6. Build asset
+npm run build
+```
 
-## Security Vulnerabilities
+## Menjalankan Aplikasi
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+# Development (jalankan semua sekaligus: server, queue, logs, vite)
+composer dev
+
+# Atau manual
+php artisan serve
+npm run dev
+```
+
+Aplikasi berjalan di `http://localhost:8000`.
+
+## Struktur Database
+
+| Collection | Keterangan |
+|------------|------------|
+| `users` | Data admin & operator |
+| `homebases` | Lokasi basecamp operator |
+| `vacuums` (bins) | Data tempat sampah & status sensor |
+| `peringatans` | Log peringatan kapasitas penuh |
+| `historylogs` | Riwayat pengangkutan |
+| `settings` | Konfigurasi sistem |
+
+## Role & Akses
+
+| Role | Prefix URL | Akses |
+|------|-----------|-------|
+| `admin` | `/admin/*` | Full dashboard, settings, history, export |
+| `operator` | `/operator/*` | Bins, notifikasi, task update |
+
+## API Endpoints
+
+### Sensor (tanpa auth)
+| Method | Endpoint | Keterangan |
+|--------|----------|------------|
+| POST | `/api/bins/update-sensor` | Terima data dari ESP32 |
+| GET | `/api/bins/test` | Test koneksi |
+
+### Admin (AJAX)
+| Method | Endpoint | Keterangan |
+|--------|----------|------------|
+| GET | `/api/admin/bins` | Ambil semua data bin |
+| GET | `/api/admin/stats` | Statistik dashboard |
+| POST | `/api/admin/bins/update` | Update status bin |
+
+## Struktur Project
+
+```
+app/
+├── Http/Controllers/
+│   ├── Admin/           # DashboardController, ExportController
+│   ├── Api/             # BinSensorController (ESP32)
+│   ├── AuthController.php
+│   ├── BinController.php
+│   ├── DashboardOperController.php
+│   ├── HistoryController.php
+│   └── SettingController.php
+├── Http/Middleware/      # Role middleware
+└── Models/              # Bin, Homebase, Notification, Peringatan, Setting, User
+resources/views/
+├── admin/               # Dashboard, settings, history, report, export
+├── auth/                # Login
+├── layouts/             # Template admin
+└── operator/            # Dashboard, bins, notifikasi, task update
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT License.

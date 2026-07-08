@@ -33,26 +33,6 @@ class DatabaseSeeder extends Seeder
             'power_status' => 'Normal'
         ]);
 
-        // Seed Vacuum untuk Central Park (FULL)
-        Vacuum::create([
-            'code' => 'VB003',
-            'homebase_id' => $centralPark->_id,
-            'status' => 'active',
-            'battery_level' => 80,
-            'capacity' => 95,
-            'last_maintenance' => now()->subDays(2)
-        ]);
-
-        // Seed Vacuum untuk Shopping Mall (NORMAL)
-        Vacuum::create([
-            'code' => 'VB001',
-            'homebase_id' => $shoppingMall->_id,
-            'status' => 'active',
-            'battery_level' => 80,
-            'capacity' => 67,
-            'last_maintenance' => now()->subDays(1)
-        ]);
-
         // Seed Peringatan untuk Central Park
         Peringatan::create([
             'homebase_id' => $centralPark->_id,
