@@ -1,4 +1,4 @@
-# 🗑️ SWB-TRIAL — Smart Waste Bin Monitoring System
+# 🗑️ SWB — Smart Waste Bin Monitoring System
 
 Sistem monitoring tempat sampah pintar berbasis web yang terintegrasi dengan sensor ESP32. Memantau kapasitas sampah secara real-time, mengelola jadwal pengangkutan, dan memberikan notifikasi otomatis kepada operator.
 
