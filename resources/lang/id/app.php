@@ -20,7 +20,7 @@ return [
     'normal' => 'Normal',
     'maintenance' => 'Perawatan',
     'loading_bins' => 'Memuat data tempat sampah...',
-    'smart_vacuum_bins' => 'Tempat Sampah Vakum Pintar',
+    'smart_bins' => 'Tempat Sampah Pintar',
     'no_bins_found' => 'Tidak ada tempat sampah',
     'try_different_filter' => 'Coba pilih filter lain',
     'capacity' => 'Kapasitas',

@@ -15,7 +15,7 @@ return [
     'normal' => 'Normal',
     'maintenance' => 'Maintenance',
     'loading_bins' => 'Loading bins data...',
-    'smart_vacuum_bins' => 'Smart Vacuum Trash Bins',
+    'smart_bins' => 'Smart Trash Bins',
     'no_bins_found' => 'No bins found',
     'try_different_filter' => 'Try selecting a different filter',
     'capacity' => 'Capacity',

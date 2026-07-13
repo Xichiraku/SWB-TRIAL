@@ -153,7 +153,7 @@ x-init="
 </div>
 
 <div x-show="!loading" class="bg-white rounded-xl shadow-sm border p-6">
-    <h2 class="text-xl font-bold text-gray-900 mb-6">{{ __('app.smart_vacuum_bins') }}</h2>
+    <h2 class="text-xl font-bold text-gray-900 mb-6">{{ __('app.smart_bins') }}</h2>
 
     <div class="space-y-4">
         <template x-for="(bin, index) in bins" :key="index">
