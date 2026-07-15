@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bin;
@@ -13,161 +13,116 @@ class DashboardController extends Controller
         if (!session('user')) {
             return redirect('/');
         }
+
         return view('admin.pages.dashboard');
     }
 
-    
     public function detail($code)
     {
-        
         $bin = Bin::where('bin_id', $code)->firstOrFail();
 
-        
-        $statusText = 'Normal';
-        $statusBadgeClass = 'bg-green-100 text-green-700';
-        $statusIcon = 'check-circle';
-
-        if ($bin->status === 'Maintenance') {
-            $statusText = 'Maintenance';
-            $statusBadgeClass = 'bg-orange-100 text-orange-700';
-            $statusIcon = 'wrench';
-        } elseif ($bin->status === 'Full' || $bin->capacity >= 85) {
-            $statusText = 'Full';
-            $statusBadgeClass = 'bg-red-100 text-red-700';
-            $statusIcon = 'alert-triangle';
-        }
-
-        return view('admin.pages.bindetail', compact('bin', 'statusText', 'statusBadgeClass', 'statusIcon'));
+        return view('admin.pages.bindetail', [
+            'bin' => $bin,
+            'statusText' => $bin->computed_status,
+            'statusBadgeClass' => match ($bin->computed_status) {
+                'Full' => 'bg-red-100 text-red-700',
+                'Maintenance' => 'bg-orange-100 text-orange-700',
+                default => 'bg-green-100 text-green-700',
+            },
+            'statusIcon' => match ($bin->computed_status) {
+                'Full' => 'alert-triangle',
+                'Maintenance' => 'wrench',
+                default => 'check-circle',
+            }
+        ]);
     }
 
-    
     public function getBins(Request $request)
     {
         $filter = $request->get('filter', 'all');
-        
-        $query = Bin::query(); 
-        
-        
-        if ($filter === 'Full') {
-            $query->where(function($q) {
-                $q->where('status', 'Full')
-                  ->orWhere('capacity', '>=', 85);
-            });
-        } elseif ($filter === 'Normal') {
-            $query->where('status', 'Normal')
-                  ->where('capacity', '<', 85);
-        } elseif ($filter === 'Maintenance') {
-            $query->where('status', 'Maintenance');
-        }
-        
-        $rawBins = $query->orderBy('bin_id', 'asc')->get();
 
-        
-        $bins = $rawBins->map(function($bin) {
-            
-            $statusText = 'Normal';
-            
-            if ($bin->status === 'Maintenance') {
-                $statusText = 'Maintenance';
-            } elseif ($bin->status === 'Full' || $bin->capacity >= 85) {
-                $statusText = 'Full';
-            }
+        $allBins = Bin::orderBy('bin_id')->get();
 
-            
-            $color = 'green';
-            if ($statusText === 'Full') $color = 'red';
-            if ($statusText === 'Maintenance') $color = 'orange';
+        $bins = $allBins->map(function ($bin) {
 
             return [
-                'bin_id'   => $bin->bin_id ?? 'Unknown', 
-                'battery'  => $bin->battery ?? 0, 
+                'bin_id' => $bin->bin_id,
+                'name' => $bin->name,
+                'type' => $bin->type,
+                'location' => $bin->location,
+
                 'capacity' => $bin->capacity ?? 0,
-                'status'   => $statusText,
-                'color'    => $color,
-                'location' => $bin->location ?? 'Unknown Location',
-                'name'     => $bin->name ?? "Bin #{$bin->bin_id}", 
+                'battery' => $bin->battery ?? 100,
+
+                'status' => $bin->computed_status,
+                'color' => $bin->status_color,
+
+                'sensor_error' => $bin->sensor_error,
+                'online' => $bin->isOnline(),
+
+                'last_seen_at' => optional($bin->last_seen_at)
+                    ? $bin->last_seen_at->format('H:i:s')
+                    : '-',
             ];
         });
 
-        
-        $allBins = Bin::all();
-        
-        
-        $fullBins = $allBins->filter(function($bin) {
-            return ($bin->status === 'Full' || $bin->capacity >= 85) 
-                   && $bin->status !== 'Maintenance';
-        });
-        
+        if ($filter != 'all') {
+            $bins = $bins->filter(function ($bin) use ($filter) {
+                return $bin['status'] == $filter;
+            })->values();
+        }
+
+        $stats = [
+            'total' => $allBins->count(),
+
+            'full' => $allBins->filter(function ($bin) {
+                return $bin->computed_status == 'Full';
+            })->count(),
+
+            'normal' => $allBins->filter(function ($bin) {
+                return $bin->computed_status == 'Normal';
+            })->count(),
+
+            'maintenance' => $allBins->filter(function ($bin) {
+                return $bin->computed_status == 'Maintenance';
+            })->count(),
+        ];
+
         return response()->json([
             'success' => true,
-            'data' => $bins,
-            'stats' => [
-                'total' => $allBins->count(), 
-                'full' => $fullBins->count(), 
-                'normal' => $allBins->filter(function($bin) {
-                    return $bin->status === 'Normal' && $bin->capacity < 85;
-                })->count(),
-                'maintenance' => $allBins->where('status', 'Maintenance')->count()
-            ]
+            'data' => $bins->values(),
+            'stats' => $stats,
         ]);
     }
 
-    // API: Dashboard Statistics
     public function getStats()
     {
-        $bins = Bin::where('is_active', true)->get();
-        
+        $bins = Bin::all();
+
         return response()->json([
             'success' => true,
             'data' => [
+
                 'total_bins' => $bins->count(),
-                'full_bins' => $bins->where('capacity', '>=', 85)->count(),
-                'normal_bins' => $bins->where('capacity', '<', 85)->count(),
-                'maintenance_bins' => $bins->where('status', 'Maintenance')->count(),
-                'average_capacity' => round($bins->avg('capacity'), 1),
-                'average_battery' => round($bins->avg('battery'), 1), 
-                'needs_attention' => $bins->filter(function($bin) {
-                    return $bin->capacity >= 85 || $bin->battery <= 20;
+
+                'full_bins' => $bins->filter(function ($bin) {
+                    return $bin->computed_status == 'Full';
                 })->count(),
-                'last_updated' => now()->format('H:i:s')
+
+                'normal_bins' => $bins->filter(function ($bin) {
+                    return $bin->computed_status == 'Normal';
+                })->count(),
+
+                'maintenance_bins' => $bins->filter(function ($bin) {
+                    return $bin->computed_status == 'Maintenance';
+                })->count(),
+
+                'average_capacity' => round($bins->avg('capacity'), 1),
+
+                'average_battery' => round($bins->avg('battery'), 1),
+
+                'last_updated' => now()->format('H:i:s'),
             ]
-        ]);
-    }
-
-    
-    public function updateBinStatus(Request $request)
-    {
-        $validated = $request->validate([
-            'bin_id' => 'required|string', // Pakai bin_id
-            'capacity' => 'required|integer|min:0|max:100',
-            'battery' => 'required|integer|min:0|max:100', // Pakai battery
-            'status' => 'nullable|string'
-        ]);
-
-        // Auto update status
-        if (!isset($validated['status'])) {
-            if ($validated['capacity'] >= 85) {
-                $validated['status'] = 'Full';
-            } else {
-                $validated['status'] = 'Normal';
-            }
-        }
-
-        $validated['updated_at'] = now();
-
-        // Cari berdasarkan bin_id
-        $bin = Bin::where('bin_id', $validated['bin_id'])->first();
-
-        if ($bin) {
-            $bin->update($validated);
-        } else {
-            $bin = Bin::create($validated);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Bin updated',
-            'data' => $bin
         ]);
     }
 }

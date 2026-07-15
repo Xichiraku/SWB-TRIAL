@@ -31,10 +31,15 @@ class HistoryController extends Controller
         $records = $query->orderBy('created_at', 'desc')->get();
 
         $stats = [
-            'total'       => HistoryLog::count(),
-            'collections' => HistoryLog::where('status', 'Emptied')->count(),
-            'maintenance' => HistoryLog::where('status', 'Battery Low')->count(),
-            'alerts'      => HistoryLog::where('status', 'Alert')->count(),
+
+            'total' => HistoryLog::count(),
+
+            'collections' => HistoryLog::where('status', 'Success')->count(),
+
+            'maintenance' => HistoryLog::where('status', 'Maintenance')->count(),
+
+            'alerts' => HistoryLog::where('status', 'Full')->count(),
+
         ];
 
         $bins = HistoryLog::distinct('bin_id')->pluck('bin_id')->sort()->values();

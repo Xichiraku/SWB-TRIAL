@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\BinSensorController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\Admin\ExportController;
+use App\Http\Controllers\ReportController;
 
 // -------------------------------------------------------
 // API SENSOR — dari ESP32, tidak butuh auth session
@@ -40,13 +41,15 @@ Route::middleware(['role:admin'])
         Route::get('/history', [HistoryController::class, 'index'])->name('history');
         Route::get('/history/refresh', [HistoryController::class, 'refresh'])->name('history.refresh');
 
-        Route::get('/report', fn () => view('admin.report'))->name('report');
+        Route::get('/report', [ReportController::class, 'index'])->name('report');
 
         // Export
         Route::prefix('export')->name('export.')->group(function () {
             Route::get('/bins', [ExportController::class, 'exportBins'])->name('bins');
             Route::get('/homebase', [ExportController::class, 'exportHomebase'])->name('homebase');
             Route::get('/peringatan', [ExportController::class, 'exportPeringatan'])->name('peringatan');
+            Route::get('/report/pdf', [ExportController::class, 'reportPdf'])
+            ->name('report.pdf');
         });
     });
 
@@ -74,8 +77,8 @@ Route::middleware(['auth.check', 'role:operator'])
 
         // Task update
         Route::get('/taskupdate', [DashboardOperController::class, 'taskUpdate'])->name('taskupdate');
-        Route::post('/taskupdate/{id}/start', [DashboardOperController::class, 'startTask'])->name('taskupdate.start');
-        Route::post('/taskupdate/{id}/complete', [DashboardOperController::class, 'completeTask'])->name('taskupdate.complete');
+        Route::post('/taskupdate/{id}/start', [DashboardOperController::class, 'startTask'])->name('operator.taskupdate.start');
+        Route::post('/taskupdate/{id}/complete', [DashboardOperController::class, 'completeTask'])->name('operator.taskupdate.complete');
 
         // Detail bin — view sama dengan admin tapi $userRole = 'operator'
         // sehingga hardware detail dan analytics tidak ditampilkan

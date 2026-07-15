@@ -14,122 +14,271 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-green-200">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-green-100 rounded-2xl">
-                    <i data-lucide="scale" class="w-8 h-8 text-green-600"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500 font-medium">Total Collection</p>
-                    <h3 class="text-2xl font-bold text-gray-800">9,275 <span class="text-sm font-normal">KG</span></h3>
-                </div>
+
+    {{-- Total Sorting --}}
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-green-200">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-green-100 rounded-2xl">
+                <i data-lucide="trash-2" class="w-8 h-8 text-green-600"></i>
             </div>
-            <div class="mt-4 flex items-center gap-2 text-green-600 text-sm">
-                <i data-lucide="trending-up" class="w-4 h-4"></i>
-                <span>12% increase from last month</span>
+
+            <div>
+                <p class="text-sm text-gray-500 font-medium">
+                    Total Sorting
+                </p>
+
+                <h3 class="text-3xl font-bold text-gray-800">
+                    {{ $totalSorting }}
+                </h3>
             </div>
         </div>
 
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-green-200">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-blue-100 rounded-2xl">
-                    <i data-lucide="zap" class="w-8 h-8 text-blue-600"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500 font-medium">Avg. Efficiency</p>
-                    <h3 class="text-2xl font-bold text-gray-800">85.4 <span class="text-sm font-normal">%</span></h3>
-                </div>
-            </div>
-            <div class="mt-4 flex items-center gap-2 text-blue-600 text-sm">
-                <i data-lucide="check-circle" class="w-4 h-4"></i>
-                <span>System uptime: 99.9%</span>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-3xl p-6 shadow-sm border border-green-200">
-            <div class="flex items-center gap-4">
-                <div class="p-3 bg-orange-100 rounded-2xl">
-                    <i data-lucide="truck" class="w-8 h-8 text-orange-600"></i>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500 font-medium">Total Pickups</p>
-                    <h3 class="text-2xl font-bold text-gray-800">124 <span class="text-sm font-normal">times</span></h3>
-                </div>
-            </div>
-            <div class="mt-4 flex items-center gap-2 text-orange-600 text-sm">
-                <i data-lucide="map-pin" class="w-4 h-4"></i>
-                <span>Most active: Polibatam Area</span>
-            </div>
+        <div class="mt-4 text-green-600 text-sm">
+            Successful sorting events
         </div>
     </div>
 
+    {{-- Full Bin --}}
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-red-200">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-red-100 rounded-2xl">
+                <i data-lucide="alert-triangle" class="w-8 h-8 text-red-600"></i>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-500 font-medium">
+                    Full Bin Events
+                </p>
+
+                <h3 class="text-3xl font-bold text-gray-800">
+                    {{ $fullEvents }}
+                </h3>
+            </div>
+        </div>
+
+        <div class="mt-4 text-red-600 text-sm">
+            Bin reached full capacity
+        </div>
+    </div>
+
+    {{-- Maintenance --}}
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-orange-200">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-orange-100 rounded-2xl">
+                <i data-lucide="wrench" class="w-8 h-8 text-orange-600"></i>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-500 font-medium">
+                    Maintenance Events
+                </p>
+
+                <h3 class="text-3xl font-bold text-gray-800">
+                    {{ $maintenanceEvents }}
+                </h3>
+            </div>
+        </div>
+
+        <div class="mt-4 text-orange-600 text-sm">
+            Sensor maintenance history
+        </div>
+    </div>
+
+</div>
+
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div class="bg-white rounded-[22px] p-6 shadow-sm border border-green-100">
-            <h3 class="text-lg font-bold text-gray-700 mb-6">Monthly Waste Collection Trend</h3>
+        <div class="bg-white rounded-[22px] p-6 shadow-sm border border-green-100 ">
+            <h3 class="text-lg font-bold text-gray-700 mb-6">
+                Sorting Activity
+            </h3>
             <div class="h-[300px]">
                 <canvas id="collectionChart"></canvas>
             </div>
         </div>
 
         <div class="bg-white rounded-[22px] p-6 shadow-sm border border-green-100">
-            <h3 class="text-lg font-bold text-gray-700 mb-6">Key Performance Metrics</h3>
+            <h3 class="text-lg font-bold text-gray-700 mb-6">
+            Waste Distribution
+        </h3>
             <div class="space-y-8">
-                <div>
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm font-semibold text-gray-600">Organic Waste Rate</span>
-                        <span class="text-sm font-bold text-green-600">85%</span>
-                    </div>
-                    <div class="w-full bg-gray-100 rounded-full h-4">
-                        <div class="bg-green-500 h-4 rounded-full" style="width: 85%"></div>
-                    </div>
-                </div>
-                <div>
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm font-semibold text-gray-600">Battery Health Avg.</span>
-                        <span class="text-sm font-bold text-blue-600">92%</span>
-                    </div>
-                    <div class="w-full bg-gray-100 rounded-full h-4">
-                        <div class="bg-blue-500 h-4 rounded-full" style="width: 92%"></div>
-                    </div>
-                </div>
-                <div>
-                    <div class="flex justify-between mb-2">
-                        <span class="text-sm font-semibold text-gray-600">Response Time Score</span>
-                        <span class="text-sm font-bold text-orange-600">78%</span>
-                    </div>
-                    <div class="w-full bg-gray-100 rounded-full h-4">
-                        <div class="bg-orange-500 h-4 rounded-full" style="width: 78%"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="bg-white rounded-[22px] p-6 shadow-sm border border-green-100">
-        <h3 class="text-lg font-bold text-gray-700 mb-4">Location Breakdown</h3>
+            @php
+                $total = $wetCount + $dryCount;
+
+                $wetPercent = $total > 0 ? round(($wetCount / $total) * 100) : 0;
+
+                $dryPercent = $total > 0 ? round(($dryCount / $total) * 100) : 0;
+            @endphp
+
+            <div>
+
+                <div class="flex justify-between mb-2">
+
+                    <span class="text-sm font-semibold text-gray-600">
+                        Wet Waste
+                    </span>
+
+                    <span class="text-sm font-bold text-green-600">
+
+                        {{ $wetPercent }}%
+
+                    </span>
+
+                </div>
+
+                <div class="w-full bg-gray-100 rounded-full h-4">
+
+                    <div
+                        class="bg-green-500 h-4 rounded-full"
+                        style="width: {{ $wetPercent }}%">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div>
+
+                <div class="flex justify-between mb-2">
+
+                    <span class="text-sm font-semibold text-gray-600">
+                        Dry Waste
+                    </span>
+
+                    <span class="text-sm font-bold text-blue-600">
+
+                        {{ $dryPercent }}%
+
+                    </span>
+
+                </div>
+
+                <div class="w-full bg-gray-100 rounded-full h-4">
+
+                    <div
+                        class="bg-blue-500 h-4 rounded-full"
+                        style="width: {{ $dryPercent }}%">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+</div>
+        <div class="flex justify-end mb-6">
+
+                <a href="{{ route('admin.export.report.pdf') }}"
+                class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-semibold transition">
+
+                    <i data-lucide="download" class="w-5 h-5"></i>
+
+                    Export PDF
+
+                </a>
+            </div>
+
+    <div class="bg-white rounded-[22px] p-6 shadow-sm border border-green-100 lg:col-span-2">
+        <h3 class="text-lg font-bold text-gray-700 mb-4">
+            Current Bin Status
+        </h3>
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
                     <tr class="text-left border-b border-gray-100">
-                        <th class="py-3 px-2 text-sm text-gray-400 font-medium">Location Name</th>
-                        <th class="py-3 px-2 text-sm text-gray-400 font-medium">Total Bin</th>
-                        <th class="py-3 px-2 text-sm text-gray-400 font-medium">Monthly Vol</th>
-                        <th class="py-3 px-2 text-sm text-gray-400 font-medium">Status</th>
+
+                    <th class="py-3 px-2 text-sm text-gray-400 font-medium">
+
+                    Bin
+
+                    </th>
+
+                    <th class="py-3 px-2 text-sm text-gray-400 font-medium">
+
+                    Capacity
+
+                    </th>
+
+                    <th class="py-3 px-2 text-sm text-gray-400 font-medium">
+
+                    Status
+
+                    </th>
+
+                    <th class="py-3 px-2 text-sm text-gray-400 font-medium">
+
+                    Last Sorting
+
+                    </th>
+
+                    <th class="py-3 px-2 text-sm text-gray-400 font-medium">
+
+                    Last Seen
+
+                    </th>
+
                     </tr>
-                </thead>
+
+                    </thead>
                 <tbody>
-                    <tr class="border-b border-gray-50">
-                        <td class="py-4 px-2 font-bold text-gray-700">Gedung Utama Polibatam</td>
-                        <td class="py-4 px-2 text-gray-600">12 Bins</td>
-                        <td class="py-4 px-2 text-gray-600">2,450 KG</td>
-                        <td class="py-4 px-2"><span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Optimal</span></td>
-                    </tr>
-                    <tr class="border-b border-gray-50">
-                        <td class="py-4 px-2 font-bold text-gray-700">Kantin Pusat</td>
-                        <td class="py-4 px-2 text-gray-600">8 Bins</td>
-                        <td class="py-4 px-2 text-gray-600">4,120 KG</td>
-                        <td class="py-4 px-2"><span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold">High Load</span></td>
-                    </tr>
+
+                @foreach($bins as $bin)
+
+                <tr class="border-b border-gray-100">
+
+                    <td class="py-4 px-2 font-bold text-gray-700">
+
+                        {{ $bin->name }}
+
+                    </td>
+
+                    <td class="py-4 px-2">
+
+                        {{ $bin->capacity }}%
+
+                    </td>
+
+                    <td class="py-4 px-2">
+
+                        @if($bin->computed_status == 'Full')
+
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold">
+                                Full
+                            </span>
+
+                        @elseif($bin->computed_status == 'Maintenance')
+
+                            <span class="px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-bold">
+                                Maintenance
+                            </span>
+
+                        @else
+
+                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">
+                                Normal
+                            </span>
+
+                        @endif
+
+                    </td>
+
+                    <td class="py-4 px-2">
+
+                        {{ $bin->last_sort_result }}
+
+                    </td>
+
+                    <td class="py-4 px-2">
+
+                        {{ optional($bin->last_seen_at)->format('d M Y H:i') }}
+
+                    </td>
+
+                </tr>
+
+                @endforeach
+
                 </tbody>
             </table>
         </div>
@@ -145,10 +294,10 @@ document.addEventListener('alpine:init', () => {
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    labels: {!! json_encode(array_keys($sortingChart)) !!},
                     datasets: [{
                         label: 'Weight (KG)',
-                        data: [1200, 1900, 1500, 2100, 2800, 2450],
+                        data: {!! json_encode(array_values($sortingChart)) !!},
                         backgroundColor: '#9AD18B',
                         borderRadius: 8,
                     }]

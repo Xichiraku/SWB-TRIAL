@@ -29,7 +29,7 @@
         </div>
         <div class="bg-[#BFE3BF] rounded-2xl p-4 lg:p-6 text-center main-shadow">
             <h2 class="text-3xl lg:text-5xl font-bold text-[#4a4a4a]">{{ $stats['collections'] }}</h2>
-            <p class="text-xs lg:text-[16px] text-[#4a4a4a] mt-1 font-medium">Collection</p>
+            <p class="text-xs lg:text-[16px] text-[#4a4a4a] mt-1 font-medium">Sorting Success</p>
         </div>
         <div class="bg-[#EFE7BE] rounded-2xl p-4 lg:p-6 text-center main-shadow">
             <h2 class="text-3xl lg:text-5xl font-bold text-[#4a4a4a]">{{ $stats['maintenance'] }}</h2>
@@ -37,7 +37,7 @@
         </div>
         <div class="bg-[#EECFD1] rounded-2xl p-4 lg:p-6 text-center main-shadow">
             <h2 class="text-3xl lg:text-5xl font-bold text-[#4a4a4a]">{{ $stats['alerts'] }}</h2>
-            <p class="text-xs lg:text-[16px] text-[#4a4a4a] mt-1 font-medium">Alert</p>
+            <p class="text-xs lg:text-[16px] text-[#4a4a4a] mt-1 font-medium">Full BIn</p>
         </div>
     </div>
 
@@ -57,11 +57,12 @@
                 <select name="status"
                         class="w-full border-2 border-[#3b6d3b] rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-green-200 focus:outline-none">
                     <option value="all">All Status</option>
-                    <option value="Emptied"   {{ request('status') === 'Emptied'     ? 'selected' : '' }}>Emptied</option>
-                    <option value="Full"      {{ request('status') === 'Full'        ? 'selected' : '' }}>Full</option>
-                    <option value="Battery Low" {{ request('status') === 'Battery Low' ? 'selected' : '' }}>Battery Low</option>
-                    <option value="Alert"     {{ request('status') === 'Alert'       ? 'selected' : '' }}>Alert</option>
+                    <option value="Success" {{ request('status') === 'Success' ? 'selected' : '' }}>
+                        Success
+                    </option>
                     <option value="Maintenance" {{ request('status') === 'Maintenance' ? 'selected' : '' }}>Maintenance</option>
+                    <option value="Full"    {{ request('status') === 'Full'       ? 'selected' : '' }}>Full</option>
+                    
                 </select>
             </div>
 
@@ -121,15 +122,21 @@
                             <span>Bin #{{ $record->bin_id }}</span>
                         </td>
                         <td class="flex lg:table-cell justify-between py-2 lg:py-4 lg:px-2 text-sm font-semibold">
-                            <span class="lg:hidden text-gray-400 font-normal">Status</span>
-                            <span @class([
-                                'text-green-600'  => $record->status === 'Emptied',
-                                'text-red-600'    => $record->status === 'Alert',
-                                'text-orange-500' => $record->status === 'Battery Low' || $record->status === 'Maintenance',
-                                'text-blue-600'   => $record->status === 'Full',
-                                'text-gray-600'   => !in_array($record->status, ['Emptied','Alert','Battery Low','Maintenance','Full']),
-                            ])>{{ $record->status }}</span>
-                        </td>
+
+    <span class="lg:hidden text-gray-400 font-normal">
+        Status
+    </span>
+
+    <span @class([
+        'text-green-600 font-bold' => $record->status === 'Success',
+        'text-red-600 font-bold' => $record->status === 'Full',
+        'text-orange-500 font-bold' => $record->status === 'Maintenance',
+        'text-gray-600 font-bold' => !in_array($record->status, ['Success','Full','Maintenance']),
+    ])>
+        {{ $record->status }}
+    </span>
+
+</td>
                         <td class="flex lg:table-cell justify-between py-2 lg:py-4 lg:px-2 text-sm font-semibold text-[#555] italic">
                             <span class="lg:hidden text-gray-400 font-normal">Message</span>
                             <span>{{ $record->message ?? '-' }}</span>

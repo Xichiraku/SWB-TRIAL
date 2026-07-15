@@ -7,6 +7,7 @@ use App\Models\Homebase;
 use App\Models\Bin;
 use App\Models\Notification;
 use App\Models\Peringatan;
+use App\Models\HistoryLog;
 
 class DashboardOperController extends Controller
 {
@@ -30,31 +31,40 @@ class DashboardOperController extends Controller
             ->get();
 
         if ($warnings->isEmpty()) {
-            $warnings = Bin::query()->needsAttention()->get()->map(function ($bin) {
-                $label = $bin->name ?? "Bin #{$bin->bin_id}";
+            $warnings = Bin::where(function ($query) {
+             $query->where('capacity', '>=', 85)
+              ->orWhere('sensor_error', true);
+              })->get()->map(function ($bin) {
+            $label = $bin->name ?? "Bin #{$bin->bin_id}";
 
-                if ($bin->isFull()) {
-                    return (object) [
-                        'type'     => 'capacity',
-                        'priority' => 'high',
-                        'title'    => "{$label} Penuh!",
-                        'message'  => "Organik {$bin->organic_capacity}% / Anorganik {$bin->anorganic_capacity}%. Segera kosongkan di {$bin->location}.",
-                        'time'     => $bin->updated_at?->diffForHumans() ?? 'Baru saja',
-                    ];
+                if ($bin->capacity >= 85) {
+                    return (object)[
+                    'type' => 'capacity',
+                    'priority' => 'high',
+                    'title' => "{$label} Full",
+                    'message' => "Capacity reached {$bin->capacity}%. Please empty the bin at {$bin->location}.",
+                    'time' => $bin->updated_at?->diffForHumans() ?? 'Just now',
+                ];
                 }
 
-                return (object) [
-                    'type'     => 'battery',
+                return (object)[
+                    'type' => 'maintenance',
                     'priority' => 'medium',
-                    'title'    => "{$label} Baterai Rendah",
-                    'message'  => "Baterai {$bin->battery}% di {$bin->location}.",
-                    'time'     => $bin->updated_at?->diffForHumans() ?? 'Baru saja',
+                    'title' => "{$label} Sensor Error",
+                    'message' => "HC-SR04 sensor is not responding.",
+                    'time' => $bin->updated_at?->diffForHumans() ?? 'Just now',
                 ];
             });
         }
 
-        return view('operator.dashboard', compact('homebases', 'warnings'));
-    }
+        $bins = Bin::orderBy('updated_at', 'desc')->get();
+
+        return view('operator.dashboard', compact(
+            'homebases',
+            'warnings',
+            'bins'
+        ));
+        }
 
     // BIN MONITORING
     public function bins()
@@ -68,71 +78,78 @@ class DashboardOperController extends Controller
 
     // NOTIFIKASI
     public function notifikasi()
-    {
-        $userId = session('user')['id'];
+{
+    $notifications = Bin::where(function ($query) {
 
-        $notifications = Notification::forOperator($userId)
-            ->orderBy('created_at', 'desc')
-            ->get();
+            $query->where('capacity', '>=', 85)
+                  ->orWhere('sensor_error', true);
 
-        // Tandai semua sebagai sudah dilihat setelah halaman dibuka
-        Notification::forOperator($userId)->unread()->update(['is_new' => false]);
+        })
+        ->orderBy('updated_at', 'desc')
+        ->get();
 
-        return view('operator.notifikasi', compact('notifications'));
-    }
+    return view('operator.notifikasi', compact('notifications'));
+}
 
     // TASK UPDATE
     public function taskUpdate()
-    {
-        $userId = session('user')['id'];
+{
+    $tasks = Bin::where(function ($query) {
 
-        // Tampilkan task milik operator ini, pending & in_progress duluan
-        $tasks = Notification::forOperator($userId)
-            ->tasks()
-            ->orderBy('task_status', 'asc')
-            ->orderBy('created_at', 'desc')
-            ->get();
+            $query->where('capacity', '>=', 85)
+                  ->orWhere('sensor_error', true);
 
-        return view('operator.taskupdate', compact('tasks'));
-    }
+        })
+        ->orderBy('updated_at', 'desc')
+        ->get();
 
-    public function startTask(string $id)
-    {
-        $task = Notification::findOrFail($id);
-        $this->authorizeTask($task);
+    return view('operator.taskupdate', compact('tasks'));
+}
+    public function startTask($id)
+{
+    $bin = Bin::findOrFail($id);
 
-        $task->markInProgress();
+    $bin->update([
+        'task_status' => 'in_progress'
+    ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Task dimulai.',
-            'status'  => $task->task_status,
-        ]);
-    }
+    return response()->json([
+        'success' => true
+    ]);
+}
 
-    public function completeTask(Request $request, string $id)
-    {
-        $request->validate([
-            'notes' => 'nullable|string|max:500',
-        ]);
+    public function completeTask($id)
+{
+    $bin = Bin::findOrFail($id);
 
-        $task = Notification::findOrFail($id);
-        $this->authorizeTask($task);
+    $bin->update([
 
-        $task->markDone($request->input('notes', ''));
+        'capacity' => 0,
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Task selesai.',
-            'status'  => $task->task_status,
-        ]);
-    }
+        'full_logged' => false,
 
-    // PRIVATE HELPERS
-    private function authorizeTask(Notification $task): void
-    {
-        if ($task->assigned_to !== session('user')['id']) {
-            abort(403, 'Akses ditolak.');
-        }
-    }
+        'task_status' => 'completed',
+
+        'last_emptied' => now(),
+
+    ]);
+
+    HistoryLog::create([
+
+        'bin_id' => $bin->bin_id,
+
+        'bin_name' => $bin->name,
+
+        'status' => 'Completed',
+
+        'message' => 'Waste collection completed.',
+
+        'triggered_by' => 'Operator'
+
+    ]);
+
+    return response()->json([
+        'success'=>true
+    ]);
+}
 }

@@ -13,7 +13,7 @@ class HistoryLog extends Model
         'bin_id',
         'bin_name',
         'homebase_id',
-        'status',       // 'Emptied' | 'Battery Low' | 'Alert' | 'Maintenance'
+        'status',       // 'status', // Success | Full | Maintenance
         'message',
         'operator_id',  // siapa yang melakukan aksi (jika ada)
         'triggered_by', // 'system' | 'operator' | 'admin'

@@ -18,41 +18,91 @@
 
     <div class="bg-white rounded-[30px] p-6 lg:p-10 shadow-sm border border-green-200 w-full">
         <div class="space-y-4 max-w-5xl mx-auto">
-            @forelse($notifications as $notif)
-            <div class="bg-white border border-slate-100 rounded-2xl p-6 relative hover:shadow-md transition-all border-l-8 
-                @if($notif->type === 'critical') border-red-500 
-                @elseif($notif->type === 'warning') border-orange-400 
-                @else border-blue-500 @endif">
-                
-                <div class="flex justify-between items-start">
-                    <div class="flex gap-4">
-                        <div class="p-3 rounded-xl 
-                            @if($notif->type === 'critical') bg-red-50 text-red-600 
-                            @elseif($notif->type === 'warning') bg-orange-50 text-orange-600 
-                            @else bg-blue-50 text-blue-600 @endif">
-                            <i data-lucide="@if($notif->type === 'critical') alert-octagon @else bell @endif" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-black text-slate-800 uppercase tracking-tight">{{ $notif->title }}</h3>
-                            <p class="text-[10px] font-bold text-slate-400 mb-2 uppercase">Dari {{ $notif->source }} | {{ $notif->datetime }}</p>
-                            <p class="text-slate-600 text-sm leading-relaxed">{{ $notif->message }}</p>
-                        </div>
-                    </div>
-                    
-                    @if($notif->has_check)
-                    <button class="text-slate-300 hover:text-green-600 transition-colors">
-                        <i data-lucide="check-circle" class="w-8 h-8"></i>
-                    </button>
-                    @endif
-                </div>
+           @forelse($notifications as $bin)
+
+<div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+
+    <div class="flex justify-between items-start">
+
+        <div>
+
+            @if($bin->sensor_error)
+
+                <h3 class="font-bold text-red-600">
+                    Maintenance Required
+                </h3>
+
+                <p class="text-slate-600 mt-2">
+                    {{ $bin->name }} mengalami masalah pada sensor HC-SR04.
+                </p>
+
+            @elseif($bin->capacity >= 85)
+
+                <h3 class="font-bold text-orange-600">
+                    Bin Full
+                </h3>
+
+                <p class="text-slate-600 mt-2">
+                    {{ $bin->name }} telah mencapai
+                    <b>{{ $bin->capacity }}%</b>.
+                    Segera lakukan pengosongan.
+                </p>
+
+            @endif
+
+            <p class="text-xs text-slate-400 mt-3">
+
+                {{ $bin->updated_at?->diffForHumans() }}
+
+            </p>
+            <div class="mt-5">
+
+                <a href="{{ route('operator.taskupdate') }}"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-semibold transition">
+
+                    <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+
+                    View Task
+
+                </a>
+
             </div>
-            @empty
-            <div class="text-center py-20 bg-slate-50 rounded-[30px] border-2 border-dashed border-slate-200">
-                <i data-lucide="bell-off" class="w-12 h-12 text-slate-300 mx-auto mb-4"></i>
-                <p class="text-slate-500 font-bold">Tidak ada notifikasi baru</p>
-            </div>
-            @endforelse
         </div>
+
+        <div>
+
+            @if($bin->sensor_error)
+
+                <i data-lucide="wrench" class="w-8 h-8 text-red-500"></i>
+
+            @else
+
+                <i data-lucide="trash-2" class="w-8 h-8 text-orange-500"></i>
+
+            @endif
+
+        </div>
+
+    </div>
+
+</div>
+
+@empty
+
+<div class="text-center py-20">
+
+    <i data-lucide="bell-off" class="w-14 h-14 mx-auto text-slate-300"></i>
+
+    <p class="mt-4 text-slate-500">
+
+        No notifications.
+
+    </p>
+
+</div>
+
+@endforelse
+     </div>
     </div>
 </div>
 @endsection
