@@ -19,7 +19,7 @@
         <div class="px-6 py-2 border-2 border-slate-800 rounded-full font-bold text-slate-800">{{ now()->translatedFormat('l, d F Y') }}</div>
     </div>
 
-    <div class="bg-red-50 border border-red-100 rounded-[30px] p-8">
+    <!-- <div class="bg-red-50 border border-red-100 rounded-[30px] p-8">
         <h2 class="text-xl font-bold text-red-600 mb-6 flex items-center gap-2">
             <i data-lucide="alert-triangle"></i> Peringatan Penting
         </h2>
@@ -31,7 +31,7 @@
             </div>
             @endforeach
         </div>
-    </div>
+    </div> -->
 
     <div class="bg-white rounded-[30px] p-8 shadow-sm border border-green-200">
 

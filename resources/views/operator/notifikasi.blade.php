@@ -5,7 +5,9 @@
 <div class="w-full max-w-7xl space-y-6">
     <div class="bg-white rounded-[25px] p-8 border border-green-100 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 w-full">
         <div class="flex items-center gap-5 text-center md:text-left">
-            <div class="text-5xl">🔔</div>
+            <div class="flex items-center justify-center rounded-2xl bg-green-50 p-3 text-[#1F4D1F]">
+                <i data-lucide="bell-ring" class="w-8 h-8"></i>
+            </div>
             <div>
                 <h1 class="text-2xl lg:text-3xl font-black text-[#1F4D1F]">Pusat Notifikasi</h1>
                 <p class="text-slate-500 font-medium">Informasi terbaru dari sistem dan admin.</p>
