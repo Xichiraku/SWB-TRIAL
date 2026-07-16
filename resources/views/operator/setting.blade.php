@@ -61,10 +61,126 @@
 
     <div class="max-w-4xl mx-auto">
         <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">{{ __('app.settings') }}</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+
+    <div class="bg-white rounded-xl shadow-sm p-5 border border-green-100">
+        <div class="flex items-center gap-3">
+
+            <div class="p-3 rounded-xl bg-green-100">
+                <i data-lucide="cpu" class="w-7 h-7 text-green-600"></i>
+            </div>
+
+            <div>
+
+                <p class="text-xs text-gray-500">
+                    ESP32 Status
+                </p>
+
+                <h3 class="font-bold text-green-600">
+                    Connected
+                </h3>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-5 border border-green-100">
+
+        <div class="flex items-center gap-3">
+
+            <div class="p-3 rounded-xl bg-orange-100">
+
+                <i data-lucide="gauge" class="w-7 h-7 text-orange-600"></i>
+
+            </div>
+
+            <div>
+
+                <p class="text-xs text-gray-500">
+
+                    Collection Threshold
+
+                </p>
+
+                <h3 class="font-bold">
+
+                    {{ $settings->collection_threshold }}%
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-5 border border-green-100">
+
+        <div class="flex items-center gap-3">
+
+            <div class="p-3 rounded-xl bg-blue-100">
+
+                <i data-lucide="refresh-cw" class="w-7 h-7 text-blue-600"></i>
+
+            </div>
+
+            <div>
+
+                <p class="text-xs text-gray-500">
+
+                    Refresh Interval
+
+                </p>
+
+                <h3 class="font-bold">
+
+                    {{ $settings->refresh_interval }} sec
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-5 border border-green-100">
+
+        <div class="flex items-center gap-3">
+
+            <div class="p-3 rounded-xl bg-purple-100">
+
+                <i data-lucide="battery-full" class="w-7 h-7 text-purple-600"></i>
+
+            </div>
+
+            <div>
+
+                <p class="text-xs text-gray-500">
+
+                    Battery Threshold
+
+                </p>
+
+                <h3 class="font-bold">
+
+                    {{ $settings->battery_threshold }}%
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
         
         <div class="bg-white rounded-xl shadow-sm p-6 sm:p-8 mb-6">
             <div class="flex items-center gap-3 mb-6">
-                <span class="text-2xl">🔔</span>
+                <i data-lucide="bell-ring"
+                    class="w-8 h-8 text-green-600"></i>
                 <h2 class="text-xl font-bold text-gray-800">{{ __('app.notifications') }}</h2>
             </div>
 
@@ -145,7 +261,8 @@
 
         <div class="bg-white rounded-xl shadow-sm p-6 sm:p-8 mb-6">
             <div class="flex items-center gap-3 mb-6">
-                <span class="text-2xl">⚙️</span>
+                <i data-lucide="settings-2"
+                    class="w-8 h-8 text-blue-600"></i>
                 <h2 class="text-xl font-bold text-gray-800">{{ __('app.system_configuration') }}</h2>
             </div>
 
@@ -200,7 +317,8 @@
 
         <div class="bg-white rounded-xl shadow-sm p-6 sm:p-8 mb-6">
             <div class="flex items-center gap-3 mb-6">
-                <span class="text-2xl">🎨</span>
+                <i data-lucide="monitor-smartphone"
+                class="w-8 h-8 text-purple-600"></i>
                 <h2 class="text-xl font-bold text-gray-800">{{ __('app.display_preferences') }}</h2>
             </div>
 

@@ -12,6 +12,133 @@
         </p>
     </div>
 
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+
+    <!-- ESP32 -->
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-green-200">
+
+        <div class="flex items-center gap-4">
+
+            <div class="p-3 bg-green-100 rounded-2xl">
+
+                <i data-lucide="cpu" class="w-7 h-7 text-green-600"></i>
+
+            </div>
+
+            <div>
+
+                <p class="text-sm text-gray-500">
+                    ESP32 Status
+                </p>
+
+                <h3 class="text-xl font-bold text-green-600">
+                    Connected
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Threshold -->
+
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-green-200">
+
+        <div class="flex items-center gap-4">
+
+            <div class="p-3 bg-orange-100 rounded-2xl">
+
+                <i data-lucide="gauge" class="w-7 h-7 text-orange-600"></i>
+
+            </div>
+
+            <div>
+
+                <p class="text-sm text-gray-500">
+
+                    Threshold
+
+                </p>
+
+                <h3 class="text-xl font-bold">
+
+                    {{ $settings->collection_threshold }}%
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Refresh -->
+
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-green-200">
+
+        <div class="flex items-center gap-4">
+
+            <div class="p-3 bg-blue-100 rounded-2xl">
+
+                <i data-lucide="refresh-cw" class="w-7 h-7 text-blue-600"></i>
+
+            </div>
+
+            <div>
+
+                <p class="text-sm text-gray-500">
+
+                    Refresh
+
+                </p>
+
+                <h3 class="text-xl font-bold">
+
+                    {{ $settings->refresh_interval }} sec
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Battery -->
+
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-green-200">
+
+        <div class="flex items-center gap-4">
+
+            <div class="p-3 bg-purple-100 rounded-2xl">
+
+                <i data-lucide="battery-full" class="w-7 h-7 text-purple-600"></i>
+
+            </div>
+
+            <div>
+
+                <p class="text-sm text-gray-500">
+
+                    Battery Alert
+
+                </p>
+
+                <h3 class="text-xl font-bold">
+
+                    {{ $settings->battery_threshold }}%
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
         <div class="bg-[#9AD18B]/80 rounded-[30px] p-8 green-shadow border border-white/20 min-h-[320px]">
