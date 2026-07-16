@@ -93,7 +93,8 @@
 
         @elseif(session('success'))
             <div class="bg-[#9AD18B] text-[#234d20] px-8 py-3 rounded-md text-sm shadow-md flex items-center gap-2 animate-slide-top">
-                ✅ Login sudah berhasil, anda akan diarahkan ke dashboard →
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                <span>Login sudah berhasil, anda akan diarahkan ke dashboard →</span>
             </div>
         @endif
 
@@ -201,7 +202,7 @@
                                     onclick="togglePassword()"
                                     class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">
 
-                                👁️
+                                <i data-lucide="eye" class="w-5 h-5"></i>
 
                             </button>
 

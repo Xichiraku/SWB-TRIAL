@@ -150,25 +150,9 @@
 
                     </span>
 
-                    <span class="font-semibold">
+                    <span class="font-semibold moisture-status" data-bin-id="{{ $bin->bin_id }}">
 
                         {{ $bin->moisture_status }}
-
-                    </span>
-
-                </div>
-
-                <div class="flex justify-between">
-
-                    <span class="text-slate-500">
-
-                        Last Sorting
-
-                    </span>
-
-                    <span class="font-semibold">
-
-                        {{ $bin->last_sort_result }}
 
                     </span>
 
@@ -182,7 +166,7 @@
 
                     </span>
 
-                    <span class="font-semibold">
+                    <span class="font-semibold updated-at" data-bin-id="{{ $bin->bin_id }}">
 
                         {{ optional($bin->updated_at)->format('H:i:s') }}
 
@@ -200,8 +184,37 @@
 
 </div>
 <script>
-
 lucide.createIcons();
 
+const refreshUrl = "{{ route('operator.dashboard.refresh') }}";
+const refreshIntervalMs = 5000;
+
+function refreshBins() {
+    fetch(refreshUrl, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then((response) => response.json())
+    .then((result) => {
+        if (!result.success) return;
+
+        (result.data || []).forEach((bin) => {
+            const statusEl = document.querySelector(`.moisture-status[data-bin-id="${bin.bin_id}"]`);
+            if (statusEl) {
+                statusEl.textContent = bin.moisture_status ?? 'Unknown';
+            }
+
+            const updatedEl = document.querySelector(`.updated-at[data-bin-id="${bin.bin_id}"]`);
+            if (updatedEl) {
+                updatedEl.textContent = bin.updated_at ?? '-';
+            }
+        });
+    })
+    .catch((error) => console.error('Gagal memperbarui data bin:', error));
+}
+
+refreshBins();
+setInterval(refreshBins, refreshIntervalMs);
 </script>
 @endsection

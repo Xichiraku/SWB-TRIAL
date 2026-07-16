@@ -5,7 +5,9 @@
 <div class="w-full max-w-7xl space-y-6">
     <div class="bg-white rounded-[25px] p-8 border border-green-100 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4 w-full">
         <div class="flex items-center gap-5">
-            <div class="text-5xl text-center">📊</div>
+            <div class="text-5xl text-center text-[#1F4D1F]">
+                <i data-lucide="bar-chart-3" class="w-10 h-10"></i>
+            </div>
             <div class="text-left">
                 <h1 class="text-2xl lg:text-3xl font-black text-[#1F4D1F]">Status Vacuum Bin</h1>
                 <p class="text-slate-500 font-medium">Detail kapasitas dan baterai unit.</p>

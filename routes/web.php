@@ -57,6 +57,7 @@ Route::middleware(['role:admin'])
 Route::prefix('api/admin')->group(function () {
     Route::get('/bins', [DashboardController::class, 'getBins']);
     Route::get('/stats', [DashboardController::class, 'getStats']);
+    Route::get('/bin/{code}/status', [DashboardController::class, 'getBinStatus'])->name('admin.bin.status');
     Route::post('/bins/update', [DashboardController::class, 'updateBinStatus']);
 });
 
@@ -69,6 +70,7 @@ Route::middleware(['auth.check', 'role:operator'])
     ->group(function () {
 
         Route::get('/dashboard', [DashboardOperController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/refresh', [DashboardOperController::class, 'refreshBins'])->name('dashboard.refresh');
 
         // Ganti dari /vacuumbin ke /bins
         Route::get('/bins', [DashboardOperController::class, 'bins'])->name('bins');

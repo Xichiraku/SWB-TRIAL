@@ -66,6 +66,31 @@ class DashboardOperController extends Controller
         ));
         }
 
+    public function refreshBins()
+    {
+        $bins = Bin::select([
+            'bin_id',
+            'moisture_status',
+            'moisture_percent',
+            'updated_at',
+        ])
+            ->orderBy('updated_at', 'desc')
+            ->get()
+            ->map(function ($bin) {
+                return [
+                    'bin_id' => $bin->bin_id,
+                    'moisture_status' => $bin->moisture_status,
+                    'moisture_percent' => $bin->moisture_percent,
+                    'updated_at' => optional($bin->updated_at)->format('H:i:s'),
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => $bins,
+        ]);
+    }
+
     // BIN MONITORING
     public function bins()
     {

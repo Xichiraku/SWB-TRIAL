@@ -127,6 +127,12 @@ class Bin extends Model
 
     public function isOnline(): bool
     {
-        return $this->last_seen_at && now()->diffInSeconds($this->last_seen_at) <= self::OFFLINE_THRESHOLD_SECONDS;
+        if (!$this->last_seen_at) {
+            return false;
+        }
+
+        $secondsSinceLastSeen = now()->diffInSeconds($this->last_seen_at, false);
+
+        return $secondsSinceLastSeen <= self::OFFLINE_THRESHOLD_SECONDS;
     }
 }

@@ -11,21 +11,18 @@
 @section('title', 'Bin #' . $bin->bin_id . ' - Detail')
 
 @section('header_title')
-    <div class="flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-4">
-    <div>
-    <h2 class="text-2xl font-bold">
-        🗑️ {{ $bin->name }}
-    </h2>
-
-    <p class="text-slate-500 mt-1">
-        📍 {{ $bin->location }}
-    </p>
+    <div class="flex items-start gap-4">
+        <div class="flex flex-col">
+            <div class="flex items-center gap-3">
+                <i data-lucide="trash-2" class="w-6 h-6"></i>
+                <h2 class="text-2xl font-bold">{{ $bin->name }}</h2>
+            </div>
+            <p class="text-slate-500 mt-1 text-sm flex items-center gap-2">
+                <i data-lucide="map-pin" class="w-4 h-4"></i>
+                <span>{{ $bin->location ?? 'Polibatam Area' }}</span>
+            </p>
+        </div>
     </div>
-    <div class="flex items-center gap-2 text-sm lg:text-base text-slate-500 font-normal">
-        <i data-lucide="map-pin" class="w-4 h-4"></i>
-        <span>{{ $bin->location ?? 'Polibatam Area' }}</span>
-    </div>
-</div>
 @endsection
 
 @section('content')
@@ -38,8 +35,9 @@
 
         <div class="bg-white rounded-3xl p-6 shadow-sm">
 
-        <h3 class="font-bold text-lg mb-4">
-        📊 Fill Level
+        <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+            <i data-lucide="gauge" class="w-5 h-5"></i>
+            <span>Fill Level</span>
         </h3>
 
         <div class="text-4xl font-bold text-green-600">
@@ -55,20 +53,19 @@
 
         </div>
 
-        <p class="mt-5 text-slate-600">
-
-        📏 Distance
-
-        <b>{{ $bin->distance_cm }} cm</b>
-
+        <p class="mt-5 text-slate-600 flex items-center gap-2">
+            <i data-lucide="ruler" class="w-4 h-4"></i>
+            <span>Distance</span>
+            <b>{{ $bin->distance_cm }} cm</b>
         </p>
 
         </div>
 
         <div class="bg-white rounded-3xl p-6 shadow-sm">
 
-        <h3 class="font-bold text-lg mb-4">
-        💧 Moisture Sensor
+        <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+            <i data-lucide="droplets" class="w-5 h-5"></i>
+            <span>Moisture Sensor</span>
         </h3>
 
         <p class="mb-3">
@@ -103,31 +100,18 @@
 
        <div class="bg-white rounded-3xl p-6 shadow-sm">
 
-<h3 class="font-bold text-lg mb-4">
-🤖 Last Sorting
-</h3>
-
-<div class="text-3xl font-bold">
-
-{{ $bin->last_sort_result }}
-
-</div>
-
-</div>
-       <div class="bg-white rounded-3xl p-6 shadow-sm">
-
-<h3 class="font-bold text-lg mb-4">
-📡 Device
+<h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+    <i data-lucide="cpu" class="w-5 h-5"></i>
+    <span>Device</span>
 </h3>
 
 <p>
 
 Status
 
-<b>
-
-{{ $bin->isOnline() ? '🟢 Online' : '🔴 Offline' }}
-
+<b class="device-status-text flex items-center gap-2" data-bin-code="{{ $bin->bin_id }}">
+    <i data-lucide="{{ $bin->isOnline() ? 'circle-dot' : 'circle-off' }}" class="w-4 h-4 {{ $bin->isOnline() ? 'text-green-600' : 'text-red-600' }}"></i>
+    <span>{{ $bin->isOnline() ? 'Online' : 'Offline' }}</span>
 </b>
 
 </p>
@@ -138,60 +122,44 @@ Last Seen
 
 <br>
 
-{{ optional($bin->last_seen_at)->format('d M Y H:i:s') }}
+<span class="device-last-seen" data-bin-code="{{ $bin->bin_id }}">{{ optional($bin->last_seen_at)->format('d M Y H:i:s') }}</span>
 
 </p>
 
-</div>
+<div class="mt-6 pt-4 border-t border-slate-200 space-y-3">
 
+<div class="flex justify-between text-sm">
 
- <div class="space-y-4">
+<span class="text-slate-500">HC-SR04</span>
 
-<div class="flex justify-between">
-
-<span>
-
-HC-SR04
-
-</span>
-
-<span>
-
-{{ $bin->sensor_error ? '❌ Error' : '✅ OK' }}
-
+<span class="flex items-center gap-2">
+    <i data-lucide="{{ $bin->sensor_error ? 'triangle-alert' : 'check-circle-2' }}" class="w-4 h-4 {{ $bin->sensor_error ? 'text-red-600' : 'text-green-600' }}"></i>
+    <span>{{ $bin->sensor_error ? 'Error' : 'OK' }}</span>
 </span>
 
 </div>
 
-<div class="flex justify-between">
+<div class="flex justify-between text-sm">
 
-<span>
+<span class="text-slate-500">Moisture Sensor</span>
 
-YL-69
-
-</span>
-
-<span>
-
-✅ OK
-
+<span class="flex items-center gap-2">
+    <i data-lucide="check-circle-2" class="w-4 h-4 text-green-600"></i>
+    <span>OK</span>
 </span>
 
 </div>
 
-<div class="flex justify-between">
+<div class="flex justify-between text-sm">
 
-<span>
+<span class="text-slate-500">ESP32</span>
 
-ESP32
-
+<span class="device-status-line flex items-center gap-2" data-bin-code="{{ $bin->bin_id }}">
+    <i data-lucide="{{ $bin->isOnline() ? 'circle-dot' : 'circle-off' }}" class="w-4 h-4 {{ $bin->isOnline() ? 'text-green-600' : 'text-red-600' }}"></i>
+    <span>{{ $bin->isOnline() ? 'Online' : 'Offline' }}</span>
 </span>
 
-<span>
-
-{{ $bin->isOnline() ? '🟢 Online' : '🔴 Offline' }}
-
-</span>
+</div>
 
 </div>
 
@@ -200,10 +168,9 @@ ESP32
 
         <div class="bg-white rounded-3xl p-8 shadow-sm">
 
-<h2 class="text-xl font-bold mb-6">
-
-📋 Sensor Information
-
+<h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+    <i data-lucide="scan-search" class="w-5 h-5"></i>
+    <span>Sensor Information</span>
 </h2>
 
 <div class="grid grid-cols-2 gap-6">
@@ -276,5 +243,53 @@ Status
 
 </div>
               
-<script>lucide.createIcons();</script>
+<script>
+lucide.createIcons();
+
+const statusUrl = "{{ route('admin.bin.status', ['code' => $bin->bin_id]) }}";
+
+function refreshDeviceStatus() {
+    fetch(statusUrl, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then((response) => response.json())
+    .then((result) => {
+        if (!result.success || !result.data) return;
+
+        document.querySelectorAll(`.device-status-text[data-bin-code="${result.data.bin_id}"]`).forEach((el) => {
+            const icon = el.querySelector('i');
+            const label = el.querySelector('span');
+            if (icon) {
+                icon.setAttribute('data-lucide', result.data.is_online ? 'circle-dot' : 'circle-off');
+                icon.className = `w-4 h-4 ${result.data.is_online ? 'text-green-600' : 'text-red-600'}`;
+            }
+            if (label) {
+                label.textContent = result.data.is_online ? 'Online' : 'Offline';
+            }
+        });
+
+        document.querySelectorAll(`.device-status-line[data-bin-code="${result.data.bin_id}"]`).forEach((el) => {
+            const icon = el.querySelector('i');
+            const label = el.querySelector('span');
+            if (icon) {
+                icon.setAttribute('data-lucide', result.data.is_online ? 'circle-dot' : 'circle-off');
+                icon.className = `w-4 h-4 ${result.data.is_online ? 'text-green-600' : 'text-red-600'}`;
+            }
+            if (label) {
+                label.textContent = result.data.is_online ? 'Online' : 'Offline';
+            }
+        });
+
+        document.querySelectorAll(`.device-last-seen[data-bin-code="${result.data.bin_id}"]`).forEach((el) => {
+            el.textContent = result.data.last_seen_at;
+        });
+    })
+    .catch((error) => console.error('Gagal memperbarui status device:', error));
+}
+
+refreshDeviceStatus();
+setInterval(refreshDeviceStatus, 5000);
+</script>
 @endsection

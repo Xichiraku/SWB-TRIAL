@@ -37,6 +37,22 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function getBinStatus($code)
+    {
+        $bin = Bin::where('bin_id', $code)->firstOrFail();
+        $isOnline = $bin->isOnline();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'bin_id' => $bin->bin_id,
+                'is_online' => $isOnline,
+                'status_text' => $isOnline ? '🟢 Online' : '🔴 Offline',
+                'last_seen_at' => optional($bin->last_seen_at)->format('d M Y H:i:s'),
+            ],
+        ]);
+    }
+
     public function getBins(Request $request)
     {
         $filter = $request->get('filter', 'all');
