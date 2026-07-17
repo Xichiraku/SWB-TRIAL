@@ -319,7 +319,7 @@ document.addEventListener('alpine:init', () => {
         notif: false,
         settings: {
             language: '{{ in_array($settings->language, ["English", "en"]) ? "en" : (in_array($settings->language, ["Bahasa Indonesia", "Indonesian", "id"]) ? "id" : "en") }}',
-            theme: '{{ $settings->theme ?? "light" }}'a
+            theme: '{{ $settings->theme ?? "light" }}'
         },
 
         save() {
