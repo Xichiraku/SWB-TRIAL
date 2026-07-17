@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', __('app.settings'))
+@section('header_title', __('app.settings'))
 
 @section('content')
     {{-- Notifikasi Simpan --}}

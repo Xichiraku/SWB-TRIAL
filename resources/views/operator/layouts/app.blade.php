@@ -13,7 +13,7 @@
 </head>
 <body class="min-h-screen font-sans" style="background: linear-gradient(to bottom right, #eff6ff, #eef2ff);">
     
-    {{-- ================= HEADER UTAMA (Logo & Profil) ================= --}}
+    {{-- ================= HEADER UTAMA (Logo, Topbar Title, Profil) ================= --}}
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
             <div class="flex items-center justify-between">
@@ -26,6 +26,13 @@
                              onerror="this.style.display='none'"> 
                         <span class="text-xl font-bold text-blue-600 hidden sm:block">SmartWaste</span>
                     </a>
+                </div>
+
+                {{-- Topbar Title Dinamis --}}
+                <div class="hidden md:flex items-center">
+                    <h2 class="text-lg font-bold text-gray-800">
+                        @yield('header_title', 'Dashboard')
+                    </h2>
                 </div>
 
                 {{-- Actions Kanan --}}
@@ -90,7 +97,7 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                     </svg>
-                    Overview
+                    Dashboard
                 </a>
 
                 {{-- Tombol Notifikasi --}}

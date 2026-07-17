@@ -1,5 +1,6 @@
 @extends('operator.layout')
 @section('title', 'Task Update')
+@section('header_title', 'Task Update')
 
 @section('content')
 

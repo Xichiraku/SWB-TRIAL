@@ -1,5 +1,6 @@
 @extends('operator.layout')
 @section('title', 'Bin Monitoring')
+@section('header_title', 'Bin Monitoring')
 
 @section('content')
 <div class="w-full max-w-7xl space-y-6">

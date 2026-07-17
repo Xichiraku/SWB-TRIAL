@@ -1,6 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('title', __('app.settings') . ' - Smart Waste Monitor')
+@section('header_title', __('app.settings'))
 
 @section('content')
 

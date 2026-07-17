@@ -1,5 +1,6 @@
 @extends('operator.layout')
 @section('title', 'Notifikasi')
+@section('header_title', 'Notifikasi')
 
 @section('content')
 <div class="w-full max-w-7xl space-y-6">

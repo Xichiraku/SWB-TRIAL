@@ -135,10 +135,6 @@
 
 <th>Status</th>
 
-<th>Last Sorting</th>
-
-<th>Last Seen</th>
-
 </tr>
 
 </thead>
@@ -190,16 +186,6 @@ Normal
 @endif
 
 </td>
-
-<td>
-
-{{ $bin->last_sort_result }}
-
-</td>
-
-<td>
-
-{{ $bin->last_seen_at ? \Carbon\Carbon::createFromTimestampUTC((int) $bin->last_seen_at)->format('d M Y H:i') : '-' }}
 
 </td>
 

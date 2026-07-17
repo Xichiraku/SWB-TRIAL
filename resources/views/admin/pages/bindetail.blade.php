@@ -84,18 +84,6 @@
 
         </p>
 
-        <p>
-
-        {{ __('app.status') }}
-
-        <b>
-
-        {{ $bin->moisture_status == 'Basah' ? __('app.wet') : __('app.dry') }}
-
-        </b>
-
-        </p>
-
         </div>
 
        <div class="bg-white rounded-3xl p-6 shadow-sm">
@@ -231,22 +219,6 @@ Moisture
 <p class="text-3xl font-bold">
 
 {{ $bin->moisture_percent }}%
-
-</p>
-
-</div>
-
-<div>
-
-<p class="text-slate-500">
-
-Status
-
-</p>
-
-<p class="text-3xl font-bold">
-
-{{ $bin->moisture_status == 'Basah' ? __('app.wet') : __('app.dry') }}
 
 </p>
 
