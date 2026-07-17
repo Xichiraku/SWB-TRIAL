@@ -95,11 +95,11 @@
 
     <h1>SMART WASTE BIN</h1>
 
-    <h2>Monitoring Report</h2>
+    <h2>Laporan Monitoring</h2>
 
     <br>
 
-    Generated :
+    Dicetak :
 
     {{ $generatedAt->format('d M Y H:i:s') }}
 
@@ -116,10 +116,6 @@
 <td class="title">Full Events</td>
 
 <td>{{ $fullEvents }}</td>
-
-<td class="title">Maintenance</td>
-
-<td>{{ $maintenanceEvents }}</td>
 
 </tr>
 
@@ -285,9 +281,9 @@ Normal
 
 <div class="footer">
 
-Generated automatically by
+    Dicetak otomatis oleh
 
-<b>Smart Waste Bin Monitoring System</b>
+    <b>Smart Waste Bin Monitoring System</b>
 
 <br>
 

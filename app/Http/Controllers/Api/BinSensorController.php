@@ -80,7 +80,8 @@ class BinSensorController extends Controller
 
                 'moisture_status' => $data['moisture_status'],
 
-                'last_sort_result' => $data['last_sort_result'],
+                // Paksa last_sort_result sesuai tipe bin, bukan dari ESP32
+                'last_sort_result' => in_array($bin->type, ['basah', 'wet']) ? 'Basah' : 'Kering',
 
             ];
 
@@ -243,23 +244,7 @@ if (($update['capacity'] ?? 0) < 90 && $bin->full_logged) {
 
 }
 
-$shouldCreateHistory = false;
-
-if ($isSorting) {
-    if (
-        $data['last_sort_result'] == 'Basah' &&
-        in_array($bin->type, ['basah', 'wet'])
-    ) {
-        $shouldCreateHistory = true;
-    }
-
-    if (
-        $data['last_sort_result'] == 'Kering' &&
-        in_array($bin->type, ['kering', 'dry'])
-    ) {
-        $shouldCreateHistory = true;
-    }
-}
+$shouldCreateHistory = $isSorting;
 
 if ($shouldCreateHistory) {
 

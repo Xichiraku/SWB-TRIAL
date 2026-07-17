@@ -22,22 +22,39 @@
     </div>
 
     {{-- STAT CARDS — dari $stats controller --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-8">
-        <div class="bg-[#9AD18B] rounded-2xl p-4 lg:p-6 text-center main-shadow">
-            <h2 class="text-3xl lg:text-5xl font-bold text-[#4a4a4a]">{{ $stats['total'] }}</h2>
-            <p class="text-xs lg:text-[16px] text-[#4a4a4a] mt-1 font-medium">{{ __('app.total_records') }}</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-green-200">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-green-100 rounded-2xl">
+                    <i data-lucide="clipboard-list" class="w-8 h-8 text-green-600"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">{{ __('app.total_records') }}</p>
+                    <h3 class="text-3xl font-bold text-gray-800">{{ $stats['total'] }}</h3>
+                </div>
+            </div>
         </div>
-        <div class="bg-[#BFE3BF] rounded-2xl p-4 lg:p-6 text-center main-shadow">
-            <h2 class="text-3xl lg:text-5xl font-bold text-[#4a4a4a]">{{ $stats['collections'] }}</h2>
-            <p class="text-xs lg:text-[16px] text-[#4a4a4a] mt-1 font-medium">{{ __('app.sorting_success') }}</p>
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-green-200">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-green-100 rounded-2xl">
+                    <i data-lucide="check-circle" class="w-8 h-8 text-green-600"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">{{ __('app.sorting_success') }}</p>
+                    <h3 class="text-3xl font-bold text-gray-800">{{ $stats['collections'] }}</h3>
+                </div>
+            </div>
         </div>
-        <div class="bg-[#EFE7BE] rounded-2xl p-4 lg:p-6 text-center main-shadow">
-            <h2 class="text-3xl lg:text-5xl font-bold text-[#4a4a4a]">{{ $stats['maintenance'] }}</h2>
-            <p class="text-xs lg:text-[16px] text-[#4a4a4a] mt-1 font-medium">{{ __('app.maintenance') }}</p>
-        </div>
-        <div class="bg-[#EECFD1] rounded-2xl p-4 lg:p-6 text-center main-shadow">
-            <h2 class="text-3xl lg:text-5xl font-bold text-[#4a4a4a]">{{ $stats['alerts'] }}</h2>
-            <p class="text-xs lg:text-[16px] text-[#4a4a4a] mt-1 font-medium">{{ __('app.full_bin') }}</p>
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-red-200">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-red-100 rounded-2xl">
+                    <i data-lucide="alert-triangle" class="w-8 h-8 text-red-600"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">{{ __('app.full_bin') }}</p>
+                    <h3 class="text-3xl font-bold text-gray-800">{{ $stats['alerts'] }}</h3>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -60,7 +77,6 @@
                     <option value="Success" {{ request('status') === 'Success' ? 'selected' : '' }}>
                         {{ __('app.success') }}
                     </option>
-                    <option value="Maintenance" {{ request('status') === 'Maintenance' ? 'selected' : '' }}>{{ __('app.maintenance') }}</option>
                     <option value="Full"    {{ request('status') === 'Full'       ? 'selected' : '' }}>{{ __('app.full') }}</option>
                     
                 </select>

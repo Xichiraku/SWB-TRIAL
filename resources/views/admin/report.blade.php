@@ -7,13 +7,18 @@
 
 <div x-data="reportManager()" x-init="initCharts()">
 
-    <div class="-mt-4 mb-7">
+    <div class="-mt-4 mb-7 flex items-center justify-between">
         <p class="text-[14px] lg:text-[16px] text-[#4a4a4a]">
             {{ __('app.report_description') }}
         </p>
+        <a href="{{ route('admin.export.report.pdf') }}"
+           class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-semibold transition">
+            <i data-lucide="download" class="w-5 h-5"></i>
+            {{ __('app.export_pdf') }}
+        </a>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
 
     {{-- Total Sorting --}}
     <div class="bg-white rounded-3xl p-6 shadow-sm border border-green-200">
@@ -58,29 +63,6 @@
 
         <div class="mt-4 text-red-600 text-sm">
             {{ __('app.bin_reached_full_capacity') }}
-        </div>
-    </div>
-
-    {{-- Maintenance --}}
-    <div class="bg-white rounded-3xl p-6 shadow-sm border border-orange-200">
-        <div class="flex items-center gap-4">
-            <div class="p-3 bg-orange-100 rounded-2xl">
-                <i data-lucide="wrench" class="w-8 h-8 text-orange-600"></i>
-            </div>
-
-            <div>
-                <p class="text-sm text-gray-500 font-medium">
-                    {{ __('app.maintenance_events') }}
-                </p>
-
-                <h3 class="text-3xl font-bold text-gray-800">
-                    {{ $maintenanceEvents }}
-                </h3>
-            </div>
-        </div>
-
-        <div class="mt-4 text-orange-600 text-sm">
-            {{ __('app.sensor_maintenance_history') }}
         </div>
     </div>
 
@@ -167,19 +149,8 @@
 
         </div>
 </div>
-        <div class="flex justify-end mb-6">
-
-                <a href="{{ route('admin.export.report.pdf') }}"
-                class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-semibold transition">
-
-                    <i data-lucide="download" class="w-5 h-5"></i>
-
-                    {{ __('app.export_pdf') }}
-
-                </a>
-            </div>
-
-    <div class="bg-white rounded-[22px] p-6 shadow-sm border border-green-100 lg:col-span-2">
+        </div>
+</div>
         <h3 class="text-lg font-bold text-gray-700 mb-4">
             {{ __('app.current_bin_status') }}
         </h3>
