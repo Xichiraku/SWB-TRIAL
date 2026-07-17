@@ -48,7 +48,7 @@ class DashboardController extends Controller
                 'bin_id' => $bin->bin_id,
                 'is_online' => $isOnline,
                 'status_text' => $isOnline ? '🟢 Online' : '🔴 Offline',
-                'last_seen_at' => optional($bin->last_seen_at)->format('d M Y H:i:s'),
+                'last_seen_at' => $bin->last_seen_at ? \Carbon\Carbon::createFromTimestampUTC((int) $bin->last_seen_at)->format('d M Y H:i:s') : '-',
             ],
         ]);
     }
@@ -76,8 +76,8 @@ class DashboardController extends Controller
                 'sensor_error' => $bin->sensor_error,
                 'online' => $bin->isOnline(),
 
-                'last_seen_at' => optional($bin->last_seen_at)
-                    ? $bin->last_seen_at->format('H:i:s')
+                'last_seen_at' => $bin->last_seen_at
+                    ? \Carbon\Carbon::createFromTimestampUTC((int) $bin->last_seen_at)->format('H:i:s')
                     : '-',
             ];
         });

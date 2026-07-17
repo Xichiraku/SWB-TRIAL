@@ -13,7 +13,7 @@ class Bin extends Model
     protected $collection = 'bins';
 
     // Berapa detik tanpa data baru dari ESP32 sebelum dianggap OFFLINE -> Maintenance
-    const OFFLINE_THRESHOLD_SECONDS = 30;
+    const OFFLINE_THRESHOLD_SECONDS = 15;
 
     protected $fillable = [
         'bin_id',
@@ -67,7 +67,7 @@ class Bin extends Model
         'is_active'          => 'boolean',
 
         'last_emptied'       => 'datetime',
-        'last_seen_at'       => 'datetime',
+        'last_emptied'       => 'datetime',
 
         'created_at'         => 'datetime',
         'updated_at'         => 'datetime',
@@ -101,7 +101,14 @@ class Bin extends Model
      */
     public function getComputedStatusAttribute(): string
     {
-        if (!$this->last_seen_at || now()->diffInSeconds($this->last_seen_at) > self::OFFLINE_THRESHOLD_SECONDS) {
+        $lastSeen = $this->last_seen_at;
+        if (is_numeric($lastSeen)) {
+            $lastSeen = \Carbon\Carbon::createFromTimestampUTC((int) $lastSeen);
+        } elseif ($lastSeen && is_string($lastSeen)) {
+            $lastSeen = \Carbon\Carbon::parse($lastSeen);
+        }
+
+        if (!$this->last_seen_at || abs(now()->utc()->diffInSeconds($lastSeen, true)) > self::OFFLINE_THRESHOLD_SECONDS) {
             return 'Maintenance';
         }
 
@@ -136,7 +143,14 @@ class Bin extends Model
             return false;
         }
 
-        $secondsSinceLastSeen = now()->diffInSeconds($this->last_seen_at, false);
+        $lastSeen = $this->last_seen_at;
+        if (is_numeric($lastSeen)) {
+            $lastSeen = \Carbon\Carbon::createFromTimestampUTC((int) $lastSeen);
+        } elseif (is_string($lastSeen)) {
+            $lastSeen = \Carbon\Carbon::parse($lastSeen);
+        }
+
+        $secondsSinceLastSeen = abs(now()->utc()->diffInSeconds($lastSeen, true));
 
         return $secondsSinceLastSeen <= self::OFFLINE_THRESHOLD_SECONDS;
     }

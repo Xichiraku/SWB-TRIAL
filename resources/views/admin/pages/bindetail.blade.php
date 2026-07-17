@@ -90,7 +90,7 @@
 
         <b>
 
-        {{ $bin->moisture_status }}
+        {{ $bin->moisture_status == 'Basah' ? __('app.wet') : __('app.dry') }}
 
         </b>
 
@@ -111,7 +111,7 @@ Status
 
 <b class="device-status-text flex items-center gap-2" data-bin-code="{{ $bin->bin_id }}">
     <i data-lucide="{{ $bin->isOnline() ? 'circle-dot' : 'circle-off' }}" class="w-4 h-4 {{ $bin->isOnline() ? 'text-green-600' : 'text-red-600' }}"></i>
-    <span>{{ $bin->isOnline() ? 'Online' : 'Offline' }}</span>
+    <span>{{ $bin->isOnline() ? __('app.online') : __('app.offline') }}</span>
 </b>
 
 </p>
@@ -122,7 +122,7 @@ Status
 
 <br>
 
-<span class="device-last-seen" data-bin-code="{{ $bin->bin_id }}">{{ optional($bin->last_seen_at)->format('d M Y H:i:s') }}</span>
+<span class="device-last-seen" data-bin-code="{{ $bin->bin_id }}">{{ $bin->last_seen_at ? \Carbon\Carbon::createFromTimestampUTC((int) $bin->last_seen_at)->format('d M Y H:i:s') : '-' }}</span>
 
 </p>
 
@@ -133,8 +133,16 @@ Status
 <span class="text-slate-500">HC-SR04</span>
 
 <span class="flex items-center gap-2">
-    <i data-lucide="{{ $bin->sensor_error ? 'triangle-alert' : 'check-circle-2' }}" class="w-4 h-4 {{ $bin->sensor_error ? 'text-red-600' : 'text-green-600' }}"></i>
-    <span>{{ $bin->sensor_error ? 'Error' : 'OK' }}</span>
+    @if(!$bin->isOnline())
+        <i data-lucide="circle-off" class="w-4 h-4 text-red-600"></i>
+        <span>{{ __('app.offline') }}</span>
+    @elseif($bin->sensor_error)
+        <i data-lucide="triangle-alert" class="w-4 h-4 text-red-600"></i>
+        <span>Error</span>
+    @else
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-green-600"></i>
+        <span>OK</span>
+    @endif
 </span>
 
 </div>
@@ -144,8 +152,13 @@ Status
 <span class="text-slate-500">Moisture Sensor</span>
 
 <span class="flex items-center gap-2">
-    <i data-lucide="check-circle-2" class="w-4 h-4 text-green-600"></i>
-    <span>OK</span>
+    @if(!$bin->isOnline())
+        <i data-lucide="circle-off" class="w-4 h-4 text-red-600"></i>
+        <span>{{ __('app.offline') }}</span>
+    @else
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-green-600"></i>
+        <span>OK</span>
+    @endif
 </span>
 
 </div>
@@ -156,7 +169,7 @@ Status
 
 <span class="device-status-line flex items-center gap-2" data-bin-code="{{ $bin->bin_id }}">
     <i data-lucide="{{ $bin->isOnline() ? 'circle-dot' : 'circle-off' }}" class="w-4 h-4 {{ $bin->isOnline() ? 'text-green-600' : 'text-red-600' }}"></i>
-    <span>{{ $bin->isOnline() ? 'Online' : 'Offline' }}</span>
+    <span>{{ $bin->isOnline() ? __('app.online') : __('app.offline') }}</span>
 </span>
 
 </div>
@@ -233,7 +246,7 @@ Status
 
 <p class="text-3xl font-bold">
 
-{{ $bin->moisture_status }}
+{{ $bin->moisture_status == 'Basah' ? __('app.wet') : __('app.dry') }}
 
 </p>
 
@@ -266,7 +279,7 @@ function refreshDeviceStatus() {
                 icon.className = `w-4 h-4 ${result.data.is_online ? 'text-green-600' : 'text-red-600'}`;
             }
             if (label) {
-                label.textContent = result.data.is_online ? 'Online' : 'Offline';
+                label.textContent = result.data.is_online ? '{{ __('app.online') }}' : '{{ __('app.offline') }}';
             }
         });
 
@@ -278,7 +291,7 @@ function refreshDeviceStatus() {
                 icon.className = `w-4 h-4 ${result.data.is_online ? 'text-green-600' : 'text-red-600'}`;
             }
             if (label) {
-                label.textContent = result.data.is_online ? 'Online' : 'Offline';
+                label.textContent = result.data.is_online ? '{{ __('app.online') }}' : '{{ __('app.offline') }}';
             }
         });
 

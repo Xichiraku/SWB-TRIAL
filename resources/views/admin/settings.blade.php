@@ -31,8 +31,8 @@
                     {{ __('app.esp32_status') }}
                 </p>
 
-                <h3 class="text-xl font-bold text-green-600">
-                    {{ __('app.connected') }}
+                <h3 class="text-xl font-bold {{ $espOnline ? 'text-green-600' : 'text-red-600' }}">
+                    {{ $espOnline ? __('app.connected') : __('app.offline') }}
                 </h3>
 
             </div>
@@ -291,8 +291,8 @@
                 {{ __('app.system_status') }}
             </span>
 
-            <span class="text-green-600 font-bold">
-                {{ __('app.connected') }}
+            <span class="{{ $espOnline ? 'text-green-600' : 'text-red-600' }} font-bold">
+                {{ $espOnline ? __('app.connected') : __('app.offline') }}
             </span>
 
         </div>

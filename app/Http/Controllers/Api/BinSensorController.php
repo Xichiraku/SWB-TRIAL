@@ -68,7 +68,7 @@ class BinSensorController extends Controller
 
                 'device_id' => $validated['device_id'],
 
-                'last_seen_at' => now(),
+                'last_seen_at' => now()->timestamp,
 
                 'sensor_error' => !$data['sensor_ok'],
                 'distance_cm' => $data['distance_cm'],

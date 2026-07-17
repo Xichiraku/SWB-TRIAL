@@ -271,7 +271,7 @@
 
                     <td class="py-4 px-2">
 
-                        {{ optional($bin->last_seen_at)->format('d M Y H:i') }}
+                        {{ $bin->last_seen_at ? \Carbon\Carbon::createFromTimestampUTC((int) $bin->last_seen_at)->format('d M Y H:i') : '-' }}
 
                     </td>
 

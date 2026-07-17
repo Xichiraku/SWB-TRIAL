@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Models\Bin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
@@ -28,7 +29,11 @@ class SettingController extends Controller
             'units'                => 'Metric',
         ]);
 
-        return view('admin.settings', compact('settings'));
+        $espOnline = Bin::where('sensor_error', false)->whereNotNull('last_seen_at')->get()->some(function ($bin) {
+            return $bin->isOnline();
+        });
+
+        return view('admin.settings', compact('settings', 'espOnline'));
     }
 
     public function update(Request $request)
