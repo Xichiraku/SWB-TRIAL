@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 
 class SettingController extends Controller
 {
@@ -23,7 +24,7 @@ class SettingController extends Controller
             'battery_threshold'    => 20,
             'refresh_interval'     => 30,
             'theme'                => 'System',
-            'language'             => 'Indonesian',
+            'language'             => 'en',
             'units'                => 'Metric',
         ]);
 
@@ -55,9 +56,21 @@ class SettingController extends Controller
             $settings = Setting::create($validated);
         }
 
+        $locale = match (strtolower((string) ($settings->language ?? 'en'))) {
+            'id', 'bahasa indonesia', 'indonesian', 'indonesia' => 'id',
+            'en', 'english' => 'en',
+            'zh', '中文', 'chinese' => 'zh',
+            default => 'en',
+        };
+
+        App::setLocale($locale);
+        app('request')->setLocale($locale);
+        session()->put('locale', $locale);
+
         return response()->json([
             'success' => true,
-            'message' => 'Pengaturan berhasil disimpan.',
+            'message' => __('app.settings_saved'),
+            'locale'  => $locale,
             'data'    => $settings,
         ]);
     }

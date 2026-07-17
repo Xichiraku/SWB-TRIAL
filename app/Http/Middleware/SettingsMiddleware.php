@@ -11,10 +11,8 @@ class SettingsMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        // Get settings dari database
         $settings = Setting::first();
 
-        // Kalau belum ada, buat default
         if (!$settings) {
             $settings = Setting::create([
                 'notif_enabled' => true,
@@ -27,24 +25,28 @@ class SettingsMiddleware
                 'battery_threshold' => 20,
                 'refresh_interval' => 30,
                 'theme' => 'System',
-                'language' => 'English',
+                'language' => 'en',
                 'units' => 'Metric'
             ]);
         }
 
-        // Set language berdasarkan settings
-        $locale = match($settings->language) {
-            'Bahasa Indonesia' => 'id',
-            'English' => 'en',
-            '中文' => 'zh',
-            default => 'en'
-        };
-        
+        $locale = $this->resolveLocale($settings->language);
         App::setLocale($locale);
+        $request->setLocale($locale);
+        session()->put('locale', $locale);
 
-        // Share settings ke semua views
         view()->share('appSettings', $settings);
 
         return $next($request);
+    }
+
+    protected function resolveLocale($language): string
+    {
+        return match (strtolower((string) $language)) {
+            'id', 'bahasa indonesia', 'indonesian', 'indonesia' => 'id',
+            'en', 'english' => 'en',
+            'zh', '中文', 'chinese' => 'zh',
+            default => config('app.fallback_locale', 'en'),
+        };
     }
 }

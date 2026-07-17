@@ -8,7 +8,7 @@
     @extends('admin.layouts.app')
 @endif
 
-@section('title', 'Bin #' . $bin->bin_id . ' - Detail')
+@section('title', __('app.bin_number', ['id' => $bin->bin_id]) . ' - ' . __('app.detail'))
 
 @section('header_title')
     <div class="flex items-start gap-4">
@@ -19,7 +19,7 @@
             </div>
             <p class="text-slate-500 mt-1 text-sm flex items-center gap-2">
                 <i data-lucide="map-pin" class="w-4 h-4"></i>
-                <span>{{ $bin->location ?? 'Polibatam Area' }}</span>
+                <span>{{ $bin->location ?? __('app.polibatam_area') }}</span>
             </p>
         </div>
     </div>
@@ -37,7 +37,7 @@
 
         <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
             <i data-lucide="gauge" class="w-5 h-5"></i>
-            <span>Fill Level</span>
+            <span>{{ __('app.fill_level') }}</span>
         </h3>
 
         <div class="text-4xl font-bold text-green-600">
@@ -55,7 +55,7 @@
 
         <p class="mt-5 text-slate-600 flex items-center gap-2">
             <i data-lucide="ruler" class="w-4 h-4"></i>
-            <span>Distance</span>
+            <span>{{ __('app.distance') }}</span>
             <b>{{ $bin->distance_cm }} cm</b>
         </p>
 
@@ -65,12 +65,12 @@
 
         <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
             <i data-lucide="droplets" class="w-5 h-5"></i>
-            <span>Moisture Sensor</span>
+            <span>{{ __('app.moisture_sensor') }}</span>
         </h3>
 
         <p class="mb-3">
 
-        Raw Value
+        {{ __('app.raw_value') }}
 
         <b>{{ $bin->moisture }}</b>
 
@@ -78,7 +78,7 @@
 
         <p class="mb-3">
 
-        Moisture
+        {{ __('app.moisture') }}
 
         <b>{{ $bin->moisture_percent }}%</b>
 
@@ -86,7 +86,7 @@
 
         <p>
 
-        Status
+        {{ __('app.status') }}
 
         <b>
 
@@ -102,7 +102,7 @@
 
 <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
     <i data-lucide="cpu" class="w-5 h-5"></i>
-    <span>Device</span>
+    <span>{{ __('app.device') }}</span>
 </h3>
 
 <p>
@@ -118,7 +118,7 @@ Status
 
 <p class="mt-4">
 
-Last Seen
+{{ __('app.last_seen') }}
 
 <br>
 
@@ -170,7 +170,7 @@ Last Seen
 
 <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
     <i data-lucide="scan-search" class="w-5 h-5"></i>
-    <span>Sensor Information</span>
+    <span>{{ __('app.sensor_information') }}</span>
 </h2>
 
 <div class="grid grid-cols-2 gap-6">
@@ -179,7 +179,7 @@ Last Seen
 
 <p class="text-slate-500">
 
-Capacity
+{{ __('app.capacity') }}
 
 </p>
 
@@ -195,7 +195,7 @@ Capacity
 
 <p class="text-slate-500">
 
-Distance
+{{ __('app.distance') }}
 
 </p>
 

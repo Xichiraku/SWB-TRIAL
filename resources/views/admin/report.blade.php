@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Analytic & Report')
-@section('header_title', 'Analytic & Report')
+@section('title', __('app.analytics_and_report'))
+@section('header_title', __('app.analytics_and_report'))
 
 @section('content')
 
@@ -9,7 +9,7 @@
 
     <div class="-mt-4 mb-7">
         <p class="text-[14px] lg:text-[16px] text-[#4a4a4a]">
-            Performance analytics and waste collection trends.
+            {{ __('app.report_description') }}
         </p>
     </div>
 
@@ -24,7 +24,7 @@
 
             <div>
                 <p class="text-sm text-gray-500 font-medium">
-                    Total Sorting
+                    {{ __('app.total_sorting') }}
                 </p>
 
                 <h3 class="text-3xl font-bold text-gray-800">
@@ -34,7 +34,7 @@
         </div>
 
         <div class="mt-4 text-green-600 text-sm">
-            Successful sorting events
+            {{ __('app.successful_sorting_events') }}
         </div>
     </div>
 
@@ -47,7 +47,7 @@
 
             <div>
                 <p class="text-sm text-gray-500 font-medium">
-                    Full Bin Events
+                    {{ __('app.full_bin_events') }}
                 </p>
 
                 <h3 class="text-3xl font-bold text-gray-800">
@@ -57,7 +57,7 @@
         </div>
 
         <div class="mt-4 text-red-600 text-sm">
-            Bin reached full capacity
+            {{ __('app.bin_reached_full_capacity') }}
         </div>
     </div>
 
@@ -70,7 +70,7 @@
 
             <div>
                 <p class="text-sm text-gray-500 font-medium">
-                    Maintenance Events
+                    {{ __('app.maintenance_events') }}
                 </p>
 
                 <h3 class="text-3xl font-bold text-gray-800">
@@ -80,7 +80,7 @@
         </div>
 
         <div class="mt-4 text-orange-600 text-sm">
-            Sensor maintenance history
+            {{ __('app.sensor_maintenance_history') }}
         </div>
     </div>
 
@@ -90,7 +90,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <div class="bg-white rounded-[22px] p-6 shadow-sm border border-green-100 ">
             <h3 class="text-lg font-bold text-gray-700 mb-6">
-                Sorting Activity
+                {{ __('app.sorting_activity') }}
             </h3>
             <div class="h-[300px]">
                 <canvas id="collectionChart"></canvas>
@@ -99,7 +99,7 @@
 
         <div class="bg-white rounded-[22px] p-6 shadow-sm border border-green-100">
             <h3 class="text-lg font-bold text-gray-700 mb-6">
-            Waste Distribution
+            {{ __('app.waste_distribution') }}
         </h3>
             <div class="space-y-8">
 
@@ -116,7 +116,7 @@
                 <div class="flex justify-between mb-2">
 
                     <span class="text-sm font-semibold text-gray-600">
-                        Wet Waste
+                        {{ __('app.wet_waste') }}
                     </span>
 
                     <span class="text-sm font-bold text-green-600">
@@ -143,7 +143,7 @@
                 <div class="flex justify-between mb-2">
 
                     <span class="text-sm font-semibold text-gray-600">
-                        Dry Waste
+                        {{ __('app.dry_waste') }}
                     </span>
 
                     <span class="text-sm font-bold text-blue-600">
@@ -174,14 +174,14 @@
 
                     <i data-lucide="download" class="w-5 h-5"></i>
 
-                    Export PDF
+                    {{ __('app.export_pdf') }}
 
                 </a>
             </div>
 
     <div class="bg-white rounded-[22px] p-6 shadow-sm border border-green-100 lg:col-span-2">
         <h3 class="text-lg font-bold text-gray-700 mb-4">
-            Current Bin Status
+            {{ __('app.current_bin_status') }}
         </h3>
         <div class="overflow-x-auto">
             <table class="w-full">
@@ -190,31 +190,31 @@
 
                     <th class="py-3 px-2 text-sm text-gray-400 font-medium">
 
-                    Bin
+                    {{ __('app.bin') }}
 
                     </th>
 
                     <th class="py-3 px-2 text-sm text-gray-400 font-medium">
 
-                    Capacity
+                    {{ __('app.capacity') }}
 
                     </th>
 
                     <th class="py-3 px-2 text-sm text-gray-400 font-medium">
 
-                    Status
+                    {{ __('app.status') }}
 
                     </th>
 
                     <th class="py-3 px-2 text-sm text-gray-400 font-medium">
 
-                    Last Sorting
+                    {{ __('app.last_sorting') }}
 
                     </th>
 
                     <th class="py-3 px-2 text-sm text-gray-400 font-medium">
 
-                    Last Seen
+                    {{ __('app.last_seen') }}
 
                     </th>
 
@@ -244,19 +244,19 @@
                         @if($bin->computed_status == 'Full')
 
                             <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold">
-                                Full
+                                {{ __('app.full') }}
                             </span>
 
                         @elseif($bin->computed_status == 'Maintenance')
 
                             <span class="px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-bold">
-                                Maintenance
+                                {{ __('app.maintenance') }}
                             </span>
 
                         @else
 
                             <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">
-                                Normal
+                                {{ __('app.normal') }}
                             </span>
 
                         @endif

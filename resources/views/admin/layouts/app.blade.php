@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="id" x-data="{ sidebarOpen:false }">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ sidebarOpen:false }">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard')</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -70,7 +71,7 @@
                 <img src="{{ asset('assets/images/logo.png') }}" class="h-12 lg:h-16 w-auto">
                 <div class="leading-tight">
                     <h1 class="text-[18px] lg:text-[20px] font-bold text-[#264626]">Smart Waste</h1>
-                    <p class="text-xs lg:text-sm text-[#3d3d3d]">Admin Console</p>
+                    <p class="text-xs lg:text-sm text-[#3d3d3d]">{{ __('app.admin_console') }}</p>
                 </div>
                 <button class="ml-auto lg:hidden p-2 rounded-lg hover:bg-gray-200" @click="sidebarOpen=false">
                     <i data-lucide="x" class="w-6 h-6 text-gray-700"></i>
@@ -82,10 +83,10 @@
             
             @php
                 $menus = [
-                    ['route' => 'admin.dashboard', 'name' => 'Dashboard', 'icon' => 'layout-dashboard', 'pattern' => 'admin/dashboard'],
-                    ['route' => 'admin.history', 'name' => 'Activity Log', 'icon' => 'history', 'pattern' => 'admin/history*'],
-                    ['route' => 'admin.report', 'name' => 'Report', 'icon' => 'bar-chart-3', 'pattern' => 'admin/report*'],
-                    ['route' => 'admin.settings', 'name' => 'Settings', 'icon' => 'settings', 'pattern' => 'admin/settings*'],
+                    ['route' => 'admin.dashboard', 'name' => __('app.dashboard'), 'icon' => 'layout-dashboard', 'pattern' => 'admin/dashboard'],
+                    ['route' => 'admin.history', 'name' => __('app.activity_log'), 'icon' => 'history', 'pattern' => 'admin/history*'],
+                    ['route' => 'admin.report', 'name' => __('app.report'), 'icon' => 'bar-chart-3', 'pattern' => 'admin/report*'],
+                    ['route' => 'admin.settings', 'name' => __('app.settings'), 'icon' => 'settings', 'pattern' => 'admin/settings*'],
                 ];
             @endphp
 
@@ -119,7 +120,7 @@
 
                 <div class="truncate">
                     <h2 class="text-[20px] lg:text-[28px] font-extrabold text-[#1F3527] truncate">
-                        @yield('header_title', 'Dashboard')
+                        @yield('header_title', __('app.dashboard'))
                     </h2>
                     <div class="text-[12px] lg:text-[16px] text-[#4a4a4a] flex items-center gap-2">
                         <i data-lucide="clock" class="w-3 h-3 lg:w-4 lg:h-4"></i>
@@ -146,14 +147,14 @@
                      class="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 overflow-hidden">
                     
                     <div class="px-4 py-2 border-b border-gray-50 mb-1">
-                        <p class="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Administrator</p>
+                        <p class="text-[10px] uppercase tracking-wider text-gray-400 font-bold">{{ __('app.administrator') }}</p>
                     </div>
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
                         <button type="submit" class="w-full px-4 py-3 text-left hover:bg-red-50 flex items-center gap-3 text-red-600 font-semibold transition-colors">
                             <i data-lucide="log-out" class="w-4 h-4"></i>
-                            <span>Logout</span>
+                            <span>{{ __('app.logout') }}</span>
                         </button>
                     </form>
                 </div>
