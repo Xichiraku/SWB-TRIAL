@@ -71,9 +71,9 @@
                 <select name="bin"
                         class="w-full border-2 border-[#3b6d3b] rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-green-200 focus:outline-none">
                     <option value="all">All Bins</option>
-                    @foreach($bins as $binId)
-                        <option value="{{ $binId }}" {{ request('bin') === $binId ? 'selected' : '' }}>
-                            Bin #{{ $binId }}
+                    @foreach($bins as $bin)
+                        <option value="{{ $bin['id'] }}" {{ request('bin') === $bin['id'] ? 'selected' : '' }}>
+                            {{ $bin['name'] }}
                         </option>
                     @endforeach
                 </select>
@@ -119,7 +119,7 @@
                         </td>
                         <td class="flex lg:table-cell justify-between py-2 lg:py-4 lg:px-2 text-sm font-semibold text-[#555]">
                             <span class="lg:hidden text-gray-400 font-normal">Bin</span>
-                            <span>Bin #{{ $record->bin_id }}</span>
+                            <span>{{ $record->bin_id }}</span>
                         </td>
                         <td class="flex lg:table-cell justify-between py-2 lg:py-4 lg:px-2 text-sm font-semibold">
 
@@ -157,6 +157,15 @@
                 </tbody>
             </table>
         </div>
+
+        @if($records->hasPages())
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6 pt-4 border-t border-[#b9e4b9]">
+            <p class="text-sm text-gray-500">
+                Showing {{ $records->firstItem() }} to {{ $records->lastItem() }} of {{ $records->total() }} results
+            </p>
+            {{ $records->links('vendor.pagination.custom') }}
+        </div>
+        @endif
     </div>
 </div>
 

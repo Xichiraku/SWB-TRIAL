@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\App;
+use App\Support\MongoSessionHandler;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -33,3 +35,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
+
+$app = App::getInstance();
+$app->singleton('session.handler.database', function ($app) {
+    $connection = $app['config']['session.connection'] ?? 'mongodb';
+    $table = $app['config']['session.table'] ?? 'sessions';
+
+    return new MongoSessionHandler($connection, $table, $app);
+});

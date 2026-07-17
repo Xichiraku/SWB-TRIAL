@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Bin;
 use App\Models\HistoryLog;
 use App\Models\Notification;
+use App\Support\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -42,7 +43,10 @@ class BinSensorController extends Controller
             'bins.*.moisture_percent' => 'required|integer|min:0|max:100',
             'bins.*.moisture_status' => 'required|string',
             'bins.*.last_sort_result' => 'required|string|in:Basah,Kering',
+            'is_sorting' => 'sometimes|boolean',
         ]);
+
+        $isSorting = $validated['is_sorting'] ?? false;
 
         $updated = [];
         $skipped = [];
@@ -122,13 +126,11 @@ if (!$data['sensor_ok']) {
 
    $operator = User::where('role', 'operator')->first();
 
-if ($operator) {
-
     $exists = Notification::where('bin_code', $bin->bin_id)
         ->where('task_status', 'pending')
         ->exists();
 
-    if (!$exists) {
+    if (!$exists && $operator) {
 
         Notification::create([
 
@@ -154,7 +156,12 @@ if ($operator) {
 
     }
 
-}
+    // Kirim WhatsApp notifikasi meski task pending sudah ada atau operator tidak ditemukan.
+    $this->sendWhatsAppNotification(
+        'sensor_error',
+        $bin->name ?? $bin->bin_id,
+        $bin->location ?? '-'
+    );
 
 }
 
@@ -162,7 +169,7 @@ if ($operator) {
 // EVENT 2 : BIN FULL
 // =====================================
 
-if (($update['capacity'] ?? 0) >= 85 && !$bin->full_logged) {
+if (($update['capacity'] ?? 0) >= 90 && !$bin->full_logged) {
 
     HistoryLog::create([
 
@@ -182,13 +189,11 @@ if (($update['capacity'] ?? 0) >= 85 && !$bin->full_logged) {
 
     $operator = User::where('role', 'operator')->first();
 
-if ($operator) {
-
     $exists = Notification::where('bin_code', $bin->bin_id)
         ->where('task_status', 'pending')
         ->exists();
 
-    if (!$exists) {
+    if (!$exists && $operator) {
 
         Notification::create([
 
@@ -214,7 +219,13 @@ if ($operator) {
 
     }
 
-}
+    // Kirim WhatsApp notifikasi meski task pending sudah ada atau operator tidak ditemukan.
+    $this->sendWhatsAppNotification(
+        'bin_full',
+        $bin->name ?? $bin->bin_id,
+        $bin->location ?? '-',
+        $update['capacity'] ?? 0
+    );
 
     $bin->update([
     'full_logged' => true,
@@ -223,7 +234,7 @@ if ($operator) {
 }
 
 // Kalau sudah tidak penuh lagi
-if (($update['capacity'] ?? 0) < 85 && $bin->full_logged) {
+if (($update['capacity'] ?? 0) < 90 && $bin->full_logged) {
 
    $bin->update([
     'full_logged' => false,
@@ -234,18 +245,20 @@ if (($update['capacity'] ?? 0) < 85 && $bin->full_logged) {
 
 $shouldCreateHistory = false;
 
-if (
-    $data['last_sort_result'] == 'Basah' &&
-    $bin->type == 'basah'
-) {
-    $shouldCreateHistory = true;
-}
+if ($isSorting) {
+    if (
+        $data['last_sort_result'] == 'Basah' &&
+        in_array($bin->type, ['basah', 'wet'])
+    ) {
+        $shouldCreateHistory = true;
+    }
 
-if (
-    $data['last_sort_result'] == 'Kering' &&
-    $bin->type == 'kering'
-) {
-    $shouldCreateHistory = true;
+    if (
+        $data['last_sort_result'] == 'Kering' &&
+        in_array($bin->type, ['kering', 'dry'])
+    ) {
+        $shouldCreateHistory = true;
+    }
 }
 
 if ($shouldCreateHistory) {
@@ -303,5 +316,35 @@ if ($shouldCreateHistory) {
             'server_time' => now(),
 
         ]);
+    }
+
+    /**
+     * Kirim notifikasi WhatsApp via Baileys service.
+     */
+    protected function sendWhatsAppNotification(string $type, string $binName, string $location, int $capacity = 0): void
+    {
+        try {
+            $to = config('whatsapp.notify_group');
+            if (empty($to)) return;
+
+            $wa = app(WhatsAppService::class);
+
+            $result = match ($type) {
+                'bin_full'      => $wa->sendBinFullNotification($to, $binName, $location, $capacity),
+                'sensor_error'  => $wa->sendSensorErrorNotification($to, $binName, $location),
+                default         => null,
+            };
+
+            Log::info('WhatsApp notification dispatched', [
+                'type' => $type,
+                'to' => $to,
+                'bin' => $binName,
+                'location' => $location,
+                'capacity' => $capacity,
+                'result' => $result,
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('WhatsApp send failed: ' . $e->getMessage());
+        }
     }
 }

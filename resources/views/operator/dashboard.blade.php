@@ -83,17 +83,25 @@
 
                 </div>
 
-                @if($bin->capacity >= 85)
+                @if($bin->capacity >= 90)
 
-                    <span class="px-3 py-1 rounded-full bg-red-100 text-red-600 text-xs font-bold">
+                    <span class="px-3 py-1 rounded-full bg-red-100 text-red-600 text-xs font-bold status-badge" data-bin-id="{{ $bin->bin_id }}">
 
                         Full
 
                     </span>
 
+                @elseif($bin->capacity >= 75)
+
+                    <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold status-badge" data-bin-id="{{ $bin->bin_id }}">
+
+                        Warning
+
+                    </span>
+
                 @elseif($bin->sensor_error)
 
-                    <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">
+                    <span class="px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-bold status-badge" data-bin-id="{{ $bin->bin_id }}">
 
                         Maintenance
 
@@ -101,7 +109,7 @@
 
                 @else
 
-                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">
+                    <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold status-badge" data-bin-id="{{ $bin->bin_id }}">
 
                         Normal
 
@@ -123,7 +131,7 @@
 
                         </span>
 
-                        <span class="font-bold">
+                        <span class="font-bold capacity-text" data-bin-id="{{ $bin->bin_id }}">
 
                             {{ $bin->capacity }}%
 
@@ -134,7 +142,8 @@
                     <div class="mt-2 w-full bg-slate-200 rounded-full h-2">
 
                         <div
-                            class="bg-green-500 h-2 rounded-full"
+                            class="capacity-bar bg-green-500 h-2 rounded-full"
+                            data-bin-id="{{ $bin->bin_id }}"
                             style="width: {{ $bin->capacity }}%">
                         </div>
 
@@ -142,7 +151,7 @@
 
                 </div>
 
-                <div class="flex justify-between">
+                <!-- <div class="flex justify-between">
 
                     <span class="text-slate-500">
 
@@ -156,7 +165,7 @@
 
                     </span>
 
-                </div>
+                </div> -->
 
                 <div class="flex justify-between">
 
@@ -200,15 +209,36 @@ function refreshBins() {
         if (!result.success) return;
 
         (result.data || []).forEach((bin) => {
-            const statusEl = document.querySelector(`.moisture-status[data-bin-id="${bin.bin_id}"]`);
-            if (statusEl) {
-                statusEl.textContent = bin.moisture_status ?? 'Unknown';
+            // Capacity text
+            const capEl = document.querySelector(`.capacity-text[data-bin-id="${bin.bin_id}"]`);
+            if (capEl) capEl.textContent = bin.capacity + '%';
+
+            // Progress bar
+            const barEl = document.querySelector(`.capacity-bar[data-bin-id="${bin.bin_id}"]`);
+            if (barEl) {
+                barEl.style.width = bin.capacity + '%';
+                barEl.className = 'capacity-bar h-2 rounded-full ' +
+                    (bin.sensor_error ? 'bg-yellow-500' : bin.capacity >= 90 ? 'bg-red-500' : bin.capacity >= 75 ? 'bg-yellow-400' : 'bg-green-500');
             }
 
-            const updatedEl = document.querySelector(`.updated-at[data-bin-id="${bin.bin_id}"]`);
-            if (updatedEl) {
-                updatedEl.textContent = bin.updated_at ?? '-';
+            // Status badge
+            const badgeEl = document.querySelector(`.status-badge[data-bin-id="${bin.bin_id}"]`);
+            if (badgeEl) {
+                badgeEl.textContent = bin.status;
+                badgeEl.className = 'px-3 py-1 rounded-full text-xs font-bold status-badge ' +
+                    (bin.status === 'Full' ? 'bg-red-100 text-red-600' :
+                     bin.status === 'Warning' ? 'bg-yellow-100 text-yellow-700' :
+                     bin.status === 'Maintenance' ? 'bg-orange-100 text-orange-700' :
+                     'bg-green-100 text-green-700');
             }
+
+            // Moisture
+            const statusEl = document.querySelector(`.moisture-status[data-bin-id="${bin.bin_id}"]`);
+            if (statusEl) statusEl.textContent = bin.moisture_status ?? 'Unknown';
+
+            // Updated time
+            const updatedEl = document.querySelector(`.updated-at[data-bin-id="${bin.bin_id}"]`);
+            if (updatedEl) updatedEl.textContent = bin.updated_at ?? '-';
         });
     })
     .catch((error) => console.error('Gagal memperbarui data bin:', error));

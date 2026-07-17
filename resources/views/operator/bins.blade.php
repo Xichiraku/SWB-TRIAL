@@ -58,7 +58,7 @@
                         </div>
                         <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
                             <div class="h-full transition-all duration-500
-                                {{ ($bin->organic_capacity ?? 0) >= 85 ? 'bg-red-500' : 'bg-green-400' }}"
+                                {{ ($bin->organic_capacity ?? 0) >= 90 ? 'bg-red-500' : ($bin->organic_capacity ?? 0) >= 75 ? 'bg-yellow-400' : 'bg-green-400' }}"
                                  style="width: {{ $bin->organic_capacity ?? 0 }}%"></div>
                         </div>
                     </div>
@@ -71,7 +71,7 @@
                         </div>
                         <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
                             <div class="h-full transition-all duration-500
-                                {{ ($bin->anorganic_capacity ?? 0) >= 85 ? 'bg-red-500' : 'bg-blue-400' }}"
+                                {{ ($bin->anorganic_capacity ?? 0) >= 90 ? 'bg-red-500' : ($bin->anorganic_capacity ?? 0) >= 75 ? 'bg-yellow-400' : 'bg-blue-400' }}"
                                  style="width: {{ $bin->anorganic_capacity ?? 0 }}%"></div>
                         </div>
                     </div>

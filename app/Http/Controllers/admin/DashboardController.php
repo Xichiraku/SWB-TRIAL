@@ -95,6 +95,10 @@ class DashboardController extends Controller
                 return $bin->computed_status == 'Full';
             })->count(),
 
+            'warning' => $allBins->filter(function ($bin) {
+                return $bin->computed_status == 'Warning';
+            })->count(),
+
             'normal' => $allBins->filter(function ($bin) {
                 return $bin->computed_status == 'Normal';
             })->count(),
@@ -123,6 +127,10 @@ class DashboardController extends Controller
 
                 'full_bins' => $bins->filter(function ($bin) {
                     return $bin->computed_status == 'Full';
+                })->count(),
+
+                'warning_bins' => $bins->filter(function ($bin) {
+                    return $bin->computed_status == 'Warning';
                 })->count(),
 
                 'normal_bins' => $bins->filter(function ($bin) {

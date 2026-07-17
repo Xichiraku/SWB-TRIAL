@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\HistoryLog;
+use App\Models\Bin;
 
 class HistoryController extends Controller
 {
@@ -28,7 +29,7 @@ class HistoryController extends Controller
             $query->whereDate('created_at', $dateFilter);
         }
 
-        $records = $query->orderBy('created_at', 'desc')->get();
+        $records = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
 
         $stats = [
 
@@ -42,7 +43,12 @@ class HistoryController extends Controller
 
         ];
 
-        $bins = HistoryLog::distinct('bin_id')->pluck('bin_id')->sort()->values();
+        $bins = Bin::orderBy('bin_id')->get()->map(function ($bin) {
+            return [
+                'id' => $bin->bin_id,
+                'name' => $bin->name ?? $bin->bin_id,
+            ];
+        });
 
         $dates = HistoryLog::distinct('created_at')
             ->orderBy('created_at', 'desc')

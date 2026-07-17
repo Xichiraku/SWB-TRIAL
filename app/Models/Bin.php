@@ -109,8 +109,12 @@ class Bin extends Model
             return 'Maintenance';
         }
 
-        if (($this->capacity ?? 0) >= 85) {
+        if (($this->capacity ?? 0) >= 90) {
             return 'Full';
+        }
+
+        if (($this->capacity ?? 0) >= 75) {
+            return 'Warning';
         }
 
         return 'Normal';
@@ -120,6 +124,7 @@ class Bin extends Model
     {
         return match ($this->computed_status) {
             'Full'        => 'red',
+            'Warning'     => 'yellow',
             'Maintenance' => 'orange',
             default       => 'green',
         };

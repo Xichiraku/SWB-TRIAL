@@ -10,12 +10,35 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\ReportController;
+use App\Support\WhatsAppService;
 
 // -------------------------------------------------------
 // API SENSOR — dari ESP32, tidak butuh auth session
 // -------------------------------------------------------
 Route::post('/api/bins/update-sensor', [BinSensorController::class, 'updateFromSensor']);
 Route::get('/api/bins/test', [BinSensorController::class, 'test']);
+
+// -------------------------------------------------------
+// WHATSAPP MANAGEMENT (admin only)
+// -------------------------------------------------------
+Route::middleware(['role:admin'])->prefix('admin')->group(function () {
+    Route::get('/whatsapp/status', function () {
+        return app(WhatsAppService::class)->status();
+    });
+
+    Route::get('/whatsapp/groups', function () {
+        return app(WhatsAppService::class)->groups();
+    });
+
+    Route::get('/whatsapp/pair/{number}', function ($number) {
+        return app(WhatsAppService::class)->pair($number);
+    });
+
+    Route::post('/whatsapp/send', function (\Illuminate\Http\Request $request) {
+        $request->validate(['to' => 'required|string', 'text' => 'required|string']);
+        return app(WhatsAppService::class)->send($request->to, $request->text);
+    });
+});
 
 // -------------------------------------------------------
 // AUTHENTICATION

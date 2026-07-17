@@ -1,7 +1,13 @@
-
 @extends('admin.layouts.app')
 
 @section('title', __('app.dashboard') . ' - Smart Waste Monitor')
+
+@section('head')
+<style>
+    @keyframes flash-status { 0%{ background-color: rgba(59,130,246,0.15); } 100%{ background-color: transparent; } }
+    .flash-status { animation: flash-status 1.2s ease-out; }
+</style>
+@endsection
 
 {{-- TITLE UNTUK HEADER KANAN --}}
 @section('page_title')
@@ -16,50 +22,7 @@
 @endsection
 
 @section('content')
-<div class="max-w-5xl mx-auto">
-<div x-data="{
-    bins: [],
-    stats: { total: 0, full: 0, normal: 0, maintenance: 0 },
-    filter: 'all',
-    loading: true,
-    lastUpdated: 'Loading...',
-
-    async fetchBins() {
-        try {
-            const response = await fetch('/api/admin/bins?filter=' + this.filter);
-            const data = await response.json();
-            
-            if (data.success) {
-                this.bins = data.data;
-                this.stats = data.stats;
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        } finally {
-            this.loading = false;
-        }
-    },
-    
-    async fetchStats() {
-        try {
-            const response = await fetch('/api/admin/stats');
-            const data = await response.json();
-            
-            if (data.success) {
-                this.lastUpdated = data.data.last_updated;
-                document.getElementById('last-updated').textContent = '{{ __('app.last_updated') }}: ' + data.data.last_updated;
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-}" 
-x-init="
-    fetchBins(); 
-    fetchStats(); 
-    setInterval(() => { fetchBins(); fetchStats(); }, 10000);
-"
->
+<div class="max-w-5xl mx-auto" x-data="dashboard()">
 
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
 
@@ -97,7 +60,7 @@ x-init="
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">
             <div class="bg-red-600 h-2 rounded-full" 
-                 :style="`width: ${stats.total > 0 ? (stats.full / stats.total) * 100 : 0}%`"></div>
+                 :style="'width:' + (stats.total > 0 ? (stats.full / stats.total) * 100 : 0) + '%'"></div>
         </div>
     </div>
 
@@ -108,7 +71,7 @@ x-init="
             <div class="bg-green-100 p-2 rounded-lg">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 0 018 18z"/>
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 0 018 18z"/>
                 </svg>
             </div>
             <div>
@@ -118,7 +81,7 @@ x-init="
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">
             <div class="bg-green-600 h-2 rounded-full" 
-                 :style="`width: ${stats.total > 0 ? (stats.normal / stats.total) * 100 : 0}%`"></div>
+                 :style="'width:' + (stats.total > 0 ? (stats.normal / stats.total) * 100 : 0) + '%'"></div>
         </div>
     </div>
 
@@ -141,7 +104,7 @@ x-init="
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2">
             <div class="bg-orange-600 h-2 rounded-full" 
-                 :style="`width: ${stats.total > 0 ? (stats.maintenance / stats.total) * 100 : 0}%`"></div>
+                 :style="'width:' + (stats.total > 0 ? (stats.maintenance / stats.total) * 100 : 0) + '%'"></div>
         </div>
     </div>
 
@@ -157,7 +120,7 @@ x-init="
 
     <div class="space-y-4">
         <template x-for="(bin, index) in bins" :key="index">
-            <a :href="`/admin/bin/${bin.bin_id}`" class="block group">
+            <a :href="'/admin/bin/' + bin.bin_id" class="block group" :data-bin-id="bin.bin_id">
                 <div class="bg-white border-2 border-gray-300 rounded-xl p-5 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md">
                     <div class="flex items-center justify-between">
                         
@@ -182,6 +145,7 @@ x-init="
                             </div>
 
                             <div x-show="bin.status === 'Full'" class="bg-red-100 text-red-700 px-4 py-1 rounded-full text-sm font-medium">{{ __('app.full') }}</div>
+                            <div x-show="bin.status === 'Warning'" class="bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-sm font-medium">Warning</div>
                             <div x-show="bin.status === 'Normal'" class="bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-medium">{{ __('app.normal') }}</div>
                             <div x-show="bin.status === 'Maintenance'" class="bg-orange-100 text-orange-700 px-4 py-1 rounded-full text-sm font-medium">{{ __('app.maintenance') }}</div>
                         </div>
@@ -192,8 +156,8 @@ x-init="
                                 <div class="flex items-center space-x-3">
                                     <div class="w-48 bg-gray-300 h-3 rounded-full overflow-hidden">
                                         <div class="h-3 rounded-full transition-all duration-1000" 
-                                             :class="bin.capacity >= 85 ? 'bg-red-600' : 'bg-blue-600'"
-                                             :style="`width: ${bin.capacity}%`"></div>
+                                             :class="bin.capacity >= 90 ? 'bg-red-600' : bin.capacity >= 75 ? 'bg-yellow-500' : 'bg-blue-600'"
+                                             :style="'width:' + bin.capacity + '%'"></div>
                                     </div>
                                     <span class="text-sm font-bold text-gray-700" x-text="bin.capacity + '%'"></span>
                                 </div>
@@ -219,5 +183,78 @@ x-init="
 </div>
 
 </div>
-</div>
 @endsection
+
+<script>
+function dashboard() {
+    return {
+        bins: [],
+        stats: { total: 0, full: 0, normal: 0, maintenance: 0 },
+        filter: 'all',
+        loading: true,
+
+        init() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+            this.fetchBins();
+            this.fetchStats();
+            setInterval(() => {
+                this.fetchBins();
+                this.fetchStats();
+            }, 5000);
+            this.$watch('filter', () => this.fetchBins());
+        },
+
+        async fetchBins() {
+            try {
+                const res = await fetch('/api/admin/bins?filter=' + this.filter);
+                const data = await res.json();
+                if (data.success) {
+                    const prevMap = {};
+                    this.bins.forEach(b => { prevMap[b.bin_id] = b.status; });
+
+                    this.bins = data.data;
+                    this.stats = data.stats;
+
+                    this.bins.forEach(b => {
+                        if (prevMap[b.bin_id] && prevMap[b.bin_id] !== 'Full' && b.status === 'Full') {
+                            if ('Notification' in window && Notification.permission === 'granted') {
+                                new Notification('\u{1F6A8} Bin Penuh!', {
+                                    body: b.name + ' di ' + b.location + ' sudah penuh (' + b.capacity + '%)',
+                                    icon: '/assets/images/logo.png'
+                                });
+                            }
+                            this.$nextTick(() => {
+                                const el = document.querySelector('[data-bin-id="' + b.bin_id + '"]');
+                                if (el) {
+                                    el.classList.add('flash-status');
+                                    setTimeout(() => el.classList.remove('flash-status'), 1200);
+                                }
+                            });
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Error:', e);
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async fetchStats() {
+            try {
+                const res = await fetch('/api/admin/stats');
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('last-updated').textContent = '{{ __("app.last_updated") }}: ' + data.data.last_updated;
+                }
+            } catch (e) {
+                console.error('Error:', e);
+            }
+        },
+
+
+    };
+}
+</script>

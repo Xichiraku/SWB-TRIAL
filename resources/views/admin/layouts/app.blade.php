@@ -41,6 +41,7 @@
             border-radius: 10px;
         }
     </style>
+    @yield('head')
 </head>
 
 <body class="bg-[#f5f5f5] antialiased">

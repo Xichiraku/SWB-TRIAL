@@ -38,9 +38,9 @@
                     {{ $bin->name }} mengalami masalah pada sensor HC-SR04.
                 </p>
 
-            @elseif($bin->capacity >= 85)
+            @elseif($bin->capacity >= 90)
 
-                <h3 class="font-bold text-orange-600">
+                <h3 class="font-bold text-red-600">
                     Bin Full
                 </h3>
 
@@ -48,6 +48,18 @@
                     {{ $bin->name }} telah mencapai
                     <b>{{ $bin->capacity }}%</b>.
                     Segera lakukan pengosongan.
+                </p>
+
+            @elseif($bin->capacity >= 75)
+
+                <h3 class="font-bold text-yellow-600">
+                    Bin Warning
+                </h3>
+
+                <p class="text-slate-600 mt-2">
+                    {{ $bin->name }} telah mencapai
+                    <b>{{ $bin->capacity }}%</b>.
+                    Pantau kondisi tong.
                 </p>
 
             @endif

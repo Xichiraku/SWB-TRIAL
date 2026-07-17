@@ -32,17 +32,27 @@ class DashboardOperController extends Controller
 
         if ($warnings->isEmpty()) {
             $warnings = Bin::where(function ($query) {
-             $query->where('capacity', '>=', 85)
+             $query->where('capacity', '>=', 75)
               ->orWhere('sensor_error', true);
               })->get()->map(function ($bin) {
             $label = $bin->name ?? "Bin #{$bin->bin_id}";
 
-                if ($bin->capacity >= 85) {
+                if ($bin->capacity >= 90) {
                     return (object)[
                     'type' => 'capacity',
                     'priority' => 'high',
                     'title' => "{$label} Full",
                     'message' => "Capacity reached {$bin->capacity}%. Please empty the bin at {$bin->location}.",
+                    'time' => $bin->updated_at?->diffForHumans() ?? 'Just now',
+                ];
+                }
+
+                if ($bin->capacity >= 75) {
+                    return (object)[
+                    'type' => 'warning',
+                    'priority' => 'medium',
+                    'title' => "{$label} Warning",
+                    'message' => "Capacity reached {$bin->capacity}%. Monitor closely.",
                     'time' => $bin->updated_at?->diffForHumans() ?? 'Just now',
                 ];
                 }
@@ -68,20 +78,17 @@ class DashboardOperController extends Controller
 
     public function refreshBins()
     {
-        $bins = Bin::select([
-            'bin_id',
-            'moisture_status',
-            'moisture_percent',
-            'updated_at',
-        ])
-            ->orderBy('updated_at', 'desc')
+        $bins = Bin::orderBy('updated_at', 'desc')
             ->get()
             ->map(function ($bin) {
                 return [
-                    'bin_id' => $bin->bin_id,
+                    'bin_id'          => $bin->bin_id,
+                    'capacity'        => $bin->capacity ?? 0,
                     'moisture_status' => $bin->moisture_status,
-                    'moisture_percent' => $bin->moisture_percent,
-                    'updated_at' => optional($bin->updated_at)->format('H:i:s'),
+                    'moisture_percent'=> $bin->moisture_percent,
+                    'sensor_error'    => (bool) $bin->sensor_error,
+                    'status'          => $bin->computed_status,
+                    'updated_at'      => optional($bin->updated_at)->format('H:i:s'),
                 ];
             });
 
