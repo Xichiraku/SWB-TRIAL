@@ -244,9 +244,12 @@ if (($update['capacity'] ?? 0) < 90 && $bin->full_logged) {
 
 }
 
-$shouldCreateHistory = $isSorting;
+// Cuma log untuk bin yang tipe-nya cocok dengan hasil sortir sensor
+$sortResult = $data['last_sort_result'];
+$binMatchesSort = ($sortResult === 'Basah' && in_array($bin->type, ['basah', 'wet']))
+               || ($sortResult === 'Kering' && in_array($bin->type, ['kering', 'dry']));
 
-if ($shouldCreateHistory) {
+if ($isSorting && $binMatchesSort) {
 
     HistoryLog::create([
 
@@ -258,15 +261,13 @@ if ($shouldCreateHistory) {
 
         'status' => 'Success',
 
-        'message' => $data['last_sort_result'] == 'Basah'
+        'message' => $sortResult == 'Basah'
             ? 'Waste sorted into Wet Bin'
             : 'Waste sorted into Dry Bin',
 
         'triggered_by' => 'ESP32',
 
     ]);
-
-    
 
 }
             $updated[] = [
